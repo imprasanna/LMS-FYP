@@ -22,16 +22,16 @@ import { LightPurpleButton } from "../components/buttonStyles";
 import styled from "styled-components";
 import { loginUser } from "../redux/userRelated/userHandle";
 import Popup from "../components/Popup";
-import adminBg from "../assets/adminImage.png"; // Replace with relevant illustration
-import teacherBg from "../assets/teacherImage.png"; // Replace with relevant illustration
-import studentBg from "../assets/studentImage.jpg"; // Replace with relevant illustration
+import adminBg from "../assets/adminImage.png";
+import teacherBg from "../assets/teacherImage.png";
+import studentBg from "../assets/studentImage.jpg"; 
 
 const theme = createTheme({
   palette: {
     primary: { main: "#550080" },
   },
   typography: {
-    fontFamily: "'Poppins', sans-serif", // Ensure this matches the font used in the logo
+    fontFamily: "'Poppins', sans-serif",
   },
 });
 

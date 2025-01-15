@@ -31,7 +31,6 @@ const ChooseUser = ({ visitor }) => {
     if (visitor === "guest") {
       setLoader(true);
       try {
-        // Fetch guest credentials from backend
         const response = await fetch(`/api/guestCredentials?role=${user}`);
         const fields = await response.json();
         dispatch(loginUser(fields, user));
