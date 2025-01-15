@@ -123,7 +123,15 @@ const AdminRegisterPage = () => {
             }}
           >
             {/* Header with Logo */}
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Box
+              onClick={() => navigate("/")}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                cursor: "pointer",
+                mb: 2,
+              }}
+            >
               <FaGraduationCap size={32} color="#550080" />
               <Typography
                 variant="h4"

@@ -24,7 +24,7 @@ import { loginUser } from "../redux/userRelated/userHandle";
 import Popup from "../components/Popup";
 import adminBg from "../assets/adminImage.png";
 import teacherBg from "../assets/teacherImage.png";
-import studentBg from "../assets/studentImage.jpg"; 
+import studentBg from "../assets/studentImage.jpg";
 
 const theme = createTheme({
   palette: {
@@ -124,7 +124,15 @@ const LoginPage = ({ role }) => {
               alignItems: "center",
             }}
           >
-            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+            <Box
+              onClick={() => navigate("/")}
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                mb: 2,
+                cursor: "pointer",
+              }}
+            >
               <FaGraduationCap size={32} color="#550080" />
               <Typography
                 variant="h4"
