@@ -17,13 +17,21 @@ import {
 } from "@mui/material";
 import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { Visibility, VisibilityOff } from "@mui/icons-material";
-import bgpic from "../../assets/designlogin.jpg";
+import { FaGraduationCap } from "react-icons/fa";
+import adminBg from "../../assets/adminImage.png";
 import { LightPurpleButton } from "../../components/buttonStyles";
 import { registerUser } from "../../redux/userRelated/userHandle";
 import styled from "styled-components";
 import Popup from "../../components/Popup";
 
-const defaultTheme = createTheme();
+const theme = createTheme({
+  palette: {
+    primary: { main: "#550080" },
+  },
+  typography: {
+    fontFamily: "'Poppins', sans-serif",
+  },
+});
 
 const AdminRegisterPage = () => {
   const dispatch = useDispatch();
@@ -89,36 +97,65 @@ const AdminRegisterPage = () => {
   }, [status, currentUser, currentRole, navigate, error, response]);
 
   return (
-    <ThemeProvider theme={defaultTheme}>
+    <ThemeProvider theme={theme}>
       <Grid container component="main" sx={{ height: "100vh" }}>
         <CssBaseline />
-        <Grid item xs={12} sm={8} md={5} component={Paper} elevation={6} square>
+        <Grid
+          item
+          xs={12}
+          sm={8}
+          md={5}
+          component={Paper}
+          elevation={6}
+          square
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+            px: 4,
+          }}
+        >
           <Box
             sx={{
-              my: 8,
-              mx: 4,
               display: "flex",
               flexDirection: "column",
               alignItems: "center",
             }}
           >
-            <Typography variant="h4" sx={{ mb: 2, color: "#2c2143" }}>
+            {/* Header with Logo */}
+            <Box sx={{ display: "flex", alignItems: "center", mb: 2 }}>
+              <FaGraduationCap size={32} color="#550080" />
+              <Typography
+                variant="h4"
+                sx={{ ml: 1, fontWeight: 600, color: "#550080" }}
+              >
+                LMS
+              </Typography>
+            </Box>
+            <Typography
+              variant="h4"
+              sx={{ mb: 1, color: "#2c2143", fontWeight: 600 }}
+            >
               Admin Register
             </Typography>
-            <Typography variant="h7">
+            <Typography
+              variant="body1"
+              sx={{ mb: 2, textAlign: "center", fontSize: "0.9rem" }}
+            >
               Create your own Courses by registering as an admin.
               <br />
-              You will be able to add students and faculty and Classes with
-              respective subjects & manage the system.
+              Add students, faculty, classes, and manage the system easily.
             </Typography>
+
+            {/* Form Fields */}
             <Box
               component="form"
               noValidate
               onSubmit={handleSubmit}
-              sx={{ mt: 2 }}
+              sx={{ mt: 1, width: "100%" }}
             >
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 id="adminName"
@@ -131,7 +168,7 @@ const AdminRegisterPage = () => {
                 onChange={handleInputChange}
               />
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 id="schoolName"
@@ -143,7 +180,7 @@ const AdminRegisterPage = () => {
                 onChange={handleInputChange}
               />
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 id="email"
@@ -155,7 +192,7 @@ const AdminRegisterPage = () => {
                 onChange={handleInputChange}
               />
               <TextField
-                margin="normal"
+                margin="dense"
                 required
                 fullWidth
                 name="password"
@@ -176,20 +213,15 @@ const AdminRegisterPage = () => {
                   ),
                 }}
               />
-              <Grid
-                container
-                sx={{ display: "flex", justifyContent: "space-between" }}
-              >
-                <FormControlLabel
-                  control={<Checkbox value="remember" color="primary" />}
-                  label="Remember me"
-                />
-              </Grid>
+              <FormControlLabel
+                control={<Checkbox value="remember" color="primary" />}
+                label="Remember me"
+              />
               <LightPurpleButton
                 type="submit"
                 fullWidth
                 variant="contained"
-                sx={{ mt: 3, mb: 2 }}
+                sx={{ mt: 2, mb: 1 }}
               >
                 {loader ? (
                   <CircularProgress size={24} color="inherit" />
@@ -197,11 +229,11 @@ const AdminRegisterPage = () => {
                   "Register"
                 )}
               </LightPurpleButton>
-              <Grid container>
-                <Grid>Already have an account?</Grid>
-                <Grid item sx={{ ml: 2 }}>
-                  <StyledLink to="/Adminlogin">Log in</StyledLink>
-                </Grid>
+              <Grid container justifyContent="center">
+                <Typography variant="body2" sx={{ mr: 1 }}>
+                  Already have an account?
+                </Typography>
+                <StyledLink to="/Adminlogin">Log in</StyledLink>
               </Grid>
             </Box>
           </Box>
@@ -212,12 +244,8 @@ const AdminRegisterPage = () => {
           sm={4}
           md={7}
           sx={{
-            backgroundImage: `url(${bgpic})`,
+            backgroundImage: `url(${adminBg})`,
             backgroundRepeat: "no-repeat",
-            backgroundColor: (t) =>
-              t.palette.mode === "light"
-                ? t.palette.grey[50]
-                : t.palette.grey[900],
             backgroundSize: "cover",
             backgroundPosition: "center",
           }}
@@ -235,7 +263,7 @@ const AdminRegisterPage = () => {
 export default AdminRegisterPage;
 
 const StyledLink = styled(Link)`
-  margin-top: 9px;
   text-decoration: none;
-  color: #7f56da;
+  color: #550080;
+  font-weight: bold;
 `;
