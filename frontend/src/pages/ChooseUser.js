@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import {
   Grid,
   Paper,
@@ -7,134 +7,124 @@ import {
   Container,
   CircularProgress,
   Backdrop,
-} from '@mui/material';
-import { AccountCircle, School, Group } from '@mui/icons-material';
-import styled from 'styled-components';
-import { useDispatch, useSelector } from 'react-redux';
-import { loginUser } from '../redux/userRelated/userHandle';
-import Popup from '../components/Popup';
+} from "@mui/material";
+import { AccountCircle, School, Group } from "@mui/icons-material";
+import { FaGraduationCap } from "react-icons/fa";
+import styled from "styled-components";
+import { useDispatch, useSelector } from "react-redux";
+import { loginUser } from "../redux/userRelated/userHandle";
+import Popup from "../components/Popup";
 
 const ChooseUser = ({ visitor }) => {
-  const dispatch = useDispatch()
-  const navigate = useNavigate()
-  const password = "zxc"
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
 
-  const { status, currentUser, currentRole } = useSelector(state => state.user);;
+  const { status, currentUser, currentRole } = useSelector(
+    (state) => state.user
+  );
 
-  const [loader, setLoader] = useState(false)
+  const [loader, setLoader] = useState(false);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
 
-  const navigateHandler = (user) => {
-    if (user === "Admin") {
-      if (visitor === "guest") {
-        const email = "biswajit06"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
+  const navigateHandler = async (user) => {
+    if (visitor === "guest") {
+      setLoader(true);
+      try {
+        // Fetch guest credentials from backend
+        const response = await fetch(`/api/guestCredentials?role=${user}`);
+        const fields = await response.json();
+        dispatch(loginUser(fields, user));
+      } catch (error) {
+        setMessage("Failed to fetch guest credentials");
+        setShowPopup(true);
+        setLoader(false);
       }
-      else {
-        navigate('/Adminlogin');
-      }
+    } else {
+      navigate(`/${user}login`);
     }
-
-    else if (user === "Student") {
-      if (visitor === "guest") {
-        const rollNum = "1"
-        const studentName = "Rahil"
-        const fields = { rollNum, studentName, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Studentlogin');
-      }
-    }
-
-    else if (user === "Teacher") {
-      if (visitor === "guest") {
-        const email = "tony@12"
-        const fields = { email, password }
-        setLoader(true)
-        dispatch(loginUser(fields, user))
-      }
-      else {
-        navigate('/Teacherlogin');
-      }
-    }
-  }
+  };
 
   useEffect(() => {
-    if (status === 'success' || currentUser !== null) {
-      if (currentRole === 'Admin') {
-        navigate('/Admin/dashboard');
+    if (status === "success" || currentUser !== null) {
+      if (currentRole === "Admin") {
+        navigate("/Admin/dashboard");
+      } else if (currentRole === "Student") {
+        navigate("/Student/dashboard");
+      } else if (currentRole === "Teacher") {
+        navigate("/Teacher/dashboard");
       }
-      else if (currentRole === 'Student') {
-        navigate('/Student/dashboard');
-      } else if (currentRole === 'Teacher') {
-        navigate('/Teacher/dashboard');
-      }
-    }
-    else if (status === 'error') {
-      setLoader(false)
-      setMessage("Network Error")
-      setShowPopup(true)
+    } else if (status === "error") {
+      setLoader(false);
+      setMessage("Network Error");
+      setShowPopup(true);
     }
   }, [status, currentRole, navigate, currentUser]);
 
   return (
     <StyledContainer>
+      <StyledHeader onClick={() => navigate("/")}>
+        <FaGraduationCap style={{ fontSize: "3rem", marginRight: "10px" }} />
+        LMS
+      </StyledHeader>
       <Container>
-        <Grid container spacing={2} justifyContent="center">
+        <Grid container spacing={4} justifyContent="center" alignItems="center">
           <Grid item xs={12} sm={6} md={4}>
             <div onClick={() => navigateHandler("Admin")}>
               <StyledPaper elevation={3}>
                 <Box mb={2}>
                   <AccountCircle fontSize="large" />
                 </Box>
-                <StyledTypography>
-                  Admin
-                </StyledTypography>
-                Login as an administrator to access the dashboard to manage app data.
+                <StyledTypography>Admin</StyledTypography>
+                <StyledDescription>
+                  - Manage app data and resources efficiently.
+                  <br />- Control institutional settings and access.
+                </StyledDescription>
               </StyledPaper>
             </div>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <StyledPaper elevation={3}>
-              <div onClick={() => navigateHandler("Student")}>
+            <div onClick={() => navigateHandler("Student")}>
+              <StyledPaper elevation={3}>
                 <Box mb={2}>
                   <School fontSize="large" />
                 </Box>
-                <StyledTypography>
-                  Student
-                </StyledTypography>
-                Login as a student to explore course materials and assignments.
-              </div>
-            </StyledPaper>
+                <StyledTypography>Student</StyledTypography>
+                <StyledDescription>
+                  - Access course materials and assignments.
+                  <br />- Engage with learning resources.
+                </StyledDescription>
+              </StyledPaper>
+            </div>
           </Grid>
           <Grid item xs={12} sm={6} md={4}>
-            <StyledPaper elevation={3}>
-              <div onClick={() => navigateHandler("Teacher")}>
+            <div onClick={() => navigateHandler("Teacher")}>
+              <StyledPaper elevation={3}>
                 <Box mb={2}>
                   <Group fontSize="large" />
                 </Box>
-                <StyledTypography>
-                  Teacher
-                </StyledTypography>
-                Login as a teacher to create courses, assignments, and track student progress.
-              </div>
-            </StyledPaper>
+                <StyledTypography>Teacher</StyledTypography>
+                <StyledDescription>
+                  - Create and manage courses and assignments.
+                  <br />- Monitor student progress effectively.
+                </StyledDescription>
+              </StyledPaper>
+            </div>
           </Grid>
         </Grid>
       </Container>
       <Backdrop
-        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        sx={{ color: "#fff", zIndex: (theme) => theme.zIndex.drawer + 1 }}
         open={loader}
       >
         <CircularProgress color="inherit" />
         Please Wait
       </Backdrop>
-      <Popup message={message} setShowPopup={setShowPopup} showPopup={showPopup} />
+      <Popup
+        message={message}
+        setShowPopup={setShowPopup}
+        showPopup={showPopup}
+      />
     </StyledContainer>
   );
 };
@@ -142,26 +132,53 @@ const ChooseUser = ({ visitor }) => {
 export default ChooseUser;
 
 const StyledContainer = styled.div`
-  background: linear-gradient(to bottom, #411d70, #19118b);
-  height: 120vh;
+  background: linear-gradient(to bottom, #f0f7ff, #c2d5ff);
+  height: 100vh;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start; /* Adjusted for positioning */
   padding: 2rem;
+`;
+
+const StyledHeader = styled.h1`
+  color: #550080;
+  cursor: pointer;
+  font-size: 2.5rem; /* Increased size */
+  margin-bottom: 2rem;
+  display: flex;
+  align-items: center;
 `;
 
 const StyledPaper = styled(Paper)`
   padding: 20px;
   text-align: center;
-  background-color: #1f1f38;
-  color:rgba(255, 255, 255, 0.6);
-  cursor:pointer;
+  background-color: #ffffff;
+  color: #4a4a4a;
+  cursor: pointer;
+  border-radius: 12px;
+  transition: all 0.3s;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
 
   &:hover {
-    background-color: #2c2c6c;
-    color:white;
+    background-color: #d3e4ff;
+    color: #000000;
   }
 `;
 
 const StyledTypography = styled.h2`
   margin-bottom: 10px;
+  font-size: 1.5rem;
+  color: #550080;
+`;
+
+const StyledDescription = styled.p`
+  font-size: 1rem;
+  color: #6c757d;
+  line-height: 1.5;
+  text-align: center;
 `;
