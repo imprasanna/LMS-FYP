@@ -1,54 +1,102 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import { Container, Grid, Box, Button } from '@mui/material';
-import styled from 'styled-components';
+import React from "react";
+import { FaGraduationCap } from "react-icons/fa";
+import { Link } from "react-router-dom";
+import { Container, Grid, Box } from "@mui/material";
+import styled from "styled-components";
 import Students from "../assets/students.svg";
-import { LightPurpleButton } from '../components/buttonStyles';
+import { LightPurpleButton } from "../components/buttonStyles";
 
 const Homepage = () => {
-    return (
-        <StyledContainer>
-            <Grid container spacing={0}>
-                <Grid item xs={12} md={6}>
-                    <img src={Students} alt="students" style={{ width: '100%' }} />
-                </Grid>
-                <Grid item xs={12} md={6}>
-                    <StyledPaper elevation={3}>
-                        <StyledTitle>
-                            Welcome to
-                            <br />
-                            LMS-
-                            <br />
-                            Learning Managment System
-                        </StyledTitle>
-                        <StyledText>
-                        Effortlessly create courses for repective Classes, organize Subjects seamlessly. Utilize a Learning Management System to manage classes and easily add students and faculty. Track attendance seamlessly, assess performance, and offer feedback. Access records, view grades, and communicate effortlessly.
+  return (
+    <StyledContainer>
+      <Grid container spacing={0}>
+        <Grid
+          item
+          xs={12}
+          md={6}
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <img src={Students} alt="students" style={{ width: "80%" }} />
+        </Grid>
+        <Grid item xs={12} md={6}>
+          <StyledPaper>
+            <StyledTitle>
+              <FaGraduationCap
+                style={{
+                  fontSize: "4rem",
+                  color: "#550080",
+                  marginBottom: "10px",
+                }}
+              />
+              <br />
+              <span
+                style={{ fontSize: "1.8rem", fontWeight: "300", color: "#666" }}
+              >
+                Welcome
+              </span>
+              <br />
+              <span
+                style={{
+                  fontSize: "1.2rem",
+                  fontWeight: "200",
+                  color: "#aaa",
+                  margin: "5px 0",
+                }}
+              >
+                to
+              </span>
+              <br />
+              <span
+                style={{
+                  fontSize: "2.8rem",
+                  fontWeight: "700",
+                  color: "#550080",
+                  marginTop: "10px",
+                }}
+              >
+                LMS
+              </span>
+            </StyledTitle>
+            <StyledText>
+              Seamlessly create courses for respective classes and organize
+              subjects efficiently. Use our Learning Management System to manage
+              classes, add students and faculty effortlessly, track attendance,
+              evaluate performance, and provide constructive feedback. Easily
+              access records, view grades, and communicate effectively.
+            </StyledText>
+            <StyledBox>
+              <StyledLink to="/choose">
+                <LightPurpleButton variant="contained" fullWidth>
+                  Login
+                </LightPurpleButton>
+              </StyledLink>
 
-                        </StyledText>
-                        <StyledBox>
-                            <StyledLink to="/choose">
-                                <LightPurpleButton variant="contained" fullWidth>
-                                    Login
-                                </LightPurpleButton>
-                            </StyledLink>
-                            
-                            <StyledText>
-                                Don't have an account?{' '}
-                                <Link to="/Adminregister" style={{color:"#550080"}}>
-                                    Sign up
-                                </Link>
-                            </StyledText>
-                        </StyledBox>
-                    </StyledPaper>
-                </Grid>
-            </Grid>
-        </StyledContainer>
-    );
+              <StyledText>
+                Don't have an account?{" "}
+                <Link
+                  to="/Adminregister"
+                  style={{
+                    color: "#550080",
+                    textDecoration: "underline",
+                    fontWeight: "bold",
+                  }}
+                >
+                  Sign up
+                </Link>
+              </StyledText>
+            </StyledBox>
+          </StyledPaper>
+        </Grid>
+      </Grid>
+    </StyledContainer>
+  );
 };
 
 export default Homepage;
-
-
 
 const StyledContainer = styled(Container)`
   display: flex;
@@ -59,8 +107,13 @@ const StyledContainer = styled(Container)`
 
 const StyledPaper = styled.div`
   padding: 24px;
-  height: 100vh;
   background-color: #f4f4f4;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  gap: 20px;
 `;
 
 const StyledBox = styled(Box)`
@@ -75,15 +128,14 @@ const StyledBox = styled(Box)`
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 `;
 
-const StyledTitle = styled.h1`
-  font-size: 2.5rem;
-  color: #333333;
-  font-family: "Manrope", sans-serif;
-  font-weight: bold;
-  padding-top: 0;
-  letter-spacing: 1px;
-  line-height: 1.2;
-  margin-bottom: 10px;
+const StyledTitle = styled.div`
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  line-height: 1; /* Tight spacing between lines */
+  margin-bottom: 10px; /* Smaller bottom margin */
+  gap: 2px; /* Minimal gap between elements */
 `;
 
 const StyledText = styled.p`
