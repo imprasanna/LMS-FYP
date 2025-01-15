@@ -20,9 +20,7 @@ import TableTemplate from "../../../components/TableTemplate";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
-import AddCardIcon from "@mui/icons-material/AddCard";
 import styled from "styled-components";
-import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
 import ConfirmationDialog from "../../../components/ConfirmationDialog";
 
@@ -47,6 +45,21 @@ const ShowClasses = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
+
+  const deleteHandler = (deleteID) => {
+    dispatch(deleteClass(deleteID))
+      .then(() => {
+        setMessage("Class deleted successfully.");
+        setShowPopup(true);
+        dispatch(getAllSclasses(adminID, "Sclass"));
+      })
+      .catch((err) => {
+        setMessage("Failed to delete class. Please try again.");
+        setShowPopup(true);
+        console.error(err);
+      });
+  };
+
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
   const [deleteID, setDeleteID] = useState(null);
 
@@ -62,17 +75,7 @@ const ShowClasses = () => {
 
   const confirmDelete = () => {
     if (deleteID) {
-      dispatch(deleteClass(deleteID))
-        .then(() => {
-          setMessage("Class deleted successfully.");
-          setShowPopup(true);
-          dispatch(getAllSclasses(adminID, "Sclass"));
-        })
-        .catch((err) => {
-          setMessage("Failed to delete class. Please try again.");
-          setShowPopup(true);
-          console.error(err);
-        });
+      deleteHandler(deleteID);
     }
     closeConfirmDialog();
   };
@@ -167,19 +170,6 @@ const ShowClasses = () => {
     );
   };
 
-  const actions = [
-    {
-      icon: <AddCardIcon color="primary" />,
-      name: "Add New Class",
-      action: () => navigate("/Admin/addclass"),
-    },
-    {
-      icon: <DeleteIcon color="error" />,
-      name: "Delete All Classes",
-      action: () => setMessage("Deleting all classes is not supported."),
-    },
-  ];
-
   return (
     <>
       {loading ? (
@@ -210,7 +200,31 @@ const ShowClasses = () => {
                   rows={sclassRows}
                 />
               )}
-              <SpeedDialTemplate actions={actions} />
+              <Box
+                sx={{
+                  position: "fixed",
+                  bottom: 16,
+                  right: 16,
+                  zIndex: 9999, // Ensures the button is on top
+                }}
+              >
+                <BlueButton
+                  variant="contained"
+                  onClick={() => navigate("/Admin/addclass")}
+                  sx={{
+                    backgroundColor: "#1976d2 !important",
+                    position: "fixed",
+                    top: 600,
+                    right: 20,
+                    zIndex: 9999,
+                    "&:hover": {
+                      backgroundColor: "#3019d2 !important",
+                    },
+                  }}
+                >
+                  Add New Class
+                </BlueButton>
+              </Box>
             </>
           )}
         </>

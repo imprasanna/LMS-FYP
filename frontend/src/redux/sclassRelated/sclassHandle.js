@@ -117,3 +117,13 @@ export const deleteClass = (id) => async (dispatch) => {
     throw error;
   }
 };
+
+export const deleteAllClasses = (adminID) => async (dispatch) => {
+  try {
+    await axios.delete(
+      `${process.env.REACT_APP_BASE_URL}/Sclass/deleteAll/${adminID}`
+    );
+  } catch (error) {
+    throw error;
+  }
+};
