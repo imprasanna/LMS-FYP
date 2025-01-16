@@ -160,6 +160,6 @@ router.delete("/Subjects/:id", deleteSubjects);
 router.delete("/SubjectsClass/:id", deleteSubjectsByClass);
 
 // File upload
-router.post("/upload", upload.single("syllabusFile"), uploadFile);
+router.post("/api/uploads/upload", upload.single("syllabusFile"), uploadFile);
 
 module.exports = router;

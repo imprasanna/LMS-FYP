@@ -5,7 +5,8 @@ const Subject = require("../models/subjectSchema");
 // Configure Multer Storage
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, path.join(__dirname, "../uploads/"));
+    const uploadDir = path.join(__dirname, "../uploads/");
+    cb(null, uploadDir);
   },
   filename: (req, file, cb) => {
     cb(null, `${Date.now()}-${file.originalname}`);
@@ -32,31 +33,43 @@ const upload = multer({ storage, fileFilter });
 // File Upload Handler
 const uploadFile = async (req, res) => {
   try {
-    const { subjectName, sessions } = req.body; // Extract form fields
-    const syllabusFile = req.file; // Uploaded file details
+    const { subjectName, subCode, sessions } = req.body;
+    const syllabusFile = req.file;
 
     if (!syllabusFile) {
       return res
         .status(400)
-        .json({ message: "File upload failed. Please upload a valid file." });
+        .json({ message: "No file uploaded. Please upload a valid file." });
     }
 
-    // Save file metadata and other details to the database
+    if (!subjectName || !subCode || !sessions) {
+      return res.status(400).json({
+        message: "All fields (subjectName, subCode, sessions) are required.",
+      });
+    }
+
+    // Set a default sclassName if not provided
+    const defaultSclassName = "640ab1234abc5678def90123"; // Replace with actual class ID from your database
+
     const newSubject = new Subject({
-      subjectName,
+      subName: subjectName,
+      subCode,
       sessions: Number(sessions),
       filePath: syllabusFile.path,
+      sclassName: defaultSclassName, // Pass default class ID
     });
 
     await newSubject.save();
 
     res.status(200).json({
       message: "Subject added successfully!",
-      filePath: syllabusFile.path, // Return file path for further use
+      filePath: syllabusFile.path,
     });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: "Server error. Could not upload file." });
+    res
+      .status(500)
+      .json({ message: error.message || "Server error occurred." });
   }
 };
 

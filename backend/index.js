@@ -11,7 +11,7 @@ dotenv.config();
 
 // Middleware
 app.use(express.json({ limit: "10mb" })); // Handle JSON request payload
-app.use(cors());
+app.use(cors({ origin: "http://localhost:3000", credentials: true }));
 
 // MongoDB connection
 mongoose
