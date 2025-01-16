@@ -43,15 +43,15 @@ const ShowSubjects = () => {
     { id: "sclassName", label: "Class", minWidth: 170 },
   ];
 
-  const subjectRows = subjectsList.map((subject) => {
-    return {
-      subName: subject.subName,
-      sessions: subject.sessions,
-      sclassName: subject.sclassName.sclassName,
-      sclassID: subject.sclassName._id,
-      id: subject._id,
-    };
-  });
+  const subjectRows = Array.isArray(subjectsList)
+    ? subjectsList.map((subject) => ({
+        subName: subject.subName || "N/A",
+        sessions: subject.sessions || 0,
+        sclassName: subject.sclassName?.sclassName || "N/A",
+        sclassID: subject.sclassName?._id || "",
+        id: subject._id,
+      }))
+    : [];
 
   const SubjectsButtonHaver = ({ row }) => {
     return (

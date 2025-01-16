@@ -65,15 +65,16 @@ export const getClassDetails = (id, address) => async (dispatch) => {
 
 export const getSubjectList = (id, address) => async (dispatch) => {
   dispatch(getRequest());
-
   try {
     const result = await axios.get(
       `${process.env.REACT_APP_BASE_URL}/${address}/${id}`
     );
-    if (result.data.message) {
+    if (result.data && Array.isArray(result.data)) {
+      dispatch(getSubjectsSuccess(result.data));
+    } else if (result.data.message) {
       dispatch(getFailed(result.data.message));
     } else {
-      dispatch(getSubjectsSuccess(result.data));
+      dispatch(getFailed("Invalid data format from server."));
     }
   } catch (error) {
     dispatch(getError(error.message));
