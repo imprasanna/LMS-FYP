@@ -205,7 +205,7 @@ const ShowClasses = () => {
                   position: "fixed",
                   bottom: 16,
                   right: 16,
-                  zIndex: 9999, // Ensures the button is on top
+                  zIndex: 9999,
                 }}
               >
                 <BlueButton
