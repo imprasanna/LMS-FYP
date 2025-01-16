@@ -35,7 +35,7 @@ The Learning Management System is a web-based application built using the MERN (
 # Installation
 
 ```sh
-git https://github.com/Biswajit-Behera/learning-management-system-LMS-/tree/main
+git https://github.com/imprasanna/LMS-FYP
 ```
 Open 2 terminals in separate windows/tabs.
 
