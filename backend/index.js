@@ -5,16 +5,23 @@ const dotenv = require("dotenv")
 // const bodyParser = require("body-parser")
 const app = express()
 const Routes = require("./routes/route.js")
+const path = require('path');
 
 const PORT = process.env.PORT || 4000
 
+// app.use(cors())
+app.use(cors({
+  origin: "http://localhost:3000",
+}));
 dotenv.config();
 
-// app.use(bodyParser.json({ limit: '10mb', extended: true }))
-// app.use(bodyParser.urlencoded({ limit: '10mb', extended: true }))
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-app.use(express.json({ limit: '10mb' }))
-app.use(cors())
+
+
+// app.use(express.json({ limit: '10mb' }))
+
+
 
 mongoose
     .connect(process.env.MONGO_URL, {
@@ -23,6 +30,7 @@ mongoose
     })
     .then(console.log("Connected to MongoDB"))
     .catch((err) => console.log("NOT CONNECTED TO NETWORK", err))
+
 
 app.use('/', Routes);
 

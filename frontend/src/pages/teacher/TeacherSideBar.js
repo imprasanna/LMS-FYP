@@ -1,6 +1,8 @@
 import * as React from 'react';
 import { Divider, ListItemButton, ListItemIcon, ListItemText, ListSubheader } from '@mui/material';
 import { Link, useLocation } from 'react-router-dom';
+import ArrowCircleUpIcon from '@mui/icons-material/ArrowCircleUp';
+import PreviewIcon from '@mui/icons-material/Preview';
 
 import HomeIcon from '@mui/icons-material/Home';
 import ExitToAppIcon from "@mui/icons-material/ExitToApp";
@@ -23,12 +25,36 @@ const TeacherSideBar = () => {
                     </ListItemIcon>
                     <ListItemText primary="Home" />
                 </ListItemButton>
+
+{/* //here to add new course uplod section */}
+<ListItemButton component={Link} to="/Teacher/upload">
+                    <ListItemIcon>
+                        <ArrowCircleUpIcon color={location.pathname === ("/Teacher/upload") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Upload Course" />
+                </ListItemButton>
+
+
+{/* here to give preview  */}
+<ListItemButton component={Link} to="/Teacher/preview">
+                    <ListItemIcon>
+                        <PreviewIcon color={location.pathname === ("/Teacher/preview") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText                           primary="Course Preview" />
+                </ListItemButton>
+
+
+
                 <ListItemButton component={Link} to="/Teacher/class">
                     <ListItemIcon>
                         <ClassOutlinedIcon color={location.pathname.startsWith("/Teacher/class") ? 'primary' : 'inherit'} />
                     </ListItemIcon>
                     <ListItemText primary={`Class ${sclassName.sclassName}`} />
                 </ListItemButton>
+
+
+
+
                 <ListItemButton component={Link} to="/Teacher/complain">
                     <ListItemIcon>
                         <AnnouncementOutlinedIcon color={location.pathname.startsWith("/Teacher/complain") ? 'primary' : 'inherit'} />

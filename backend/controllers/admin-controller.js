@@ -82,6 +82,7 @@ const adminRegister = async (req, res) => {
 
 const adminLogIn = async (req, res) => {
     if (req.body.email && req.body.password) {
+        console.log(req.body.email , req.body.password);
         let admin = await Admin.findOne({ email: req.body.email });
         if (admin) {
             if (req.body.password === admin.password) {
