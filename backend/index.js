@@ -3,6 +3,8 @@ const cors = require("cors");
 const mongoose = require("mongoose");
 const dotenv = require("dotenv");
 const Routes = require("./routes/route"); // Correctly reference your `route.js`
+const morgan = require('morgan')
+const cookieParser = require("cookie-parser");
 
 const app = express();
 const PORT = process.env.PORT || 4000;
@@ -12,6 +14,9 @@ dotenv.config();
 // Middleware
 app.use(express.json({ limit: "10mb" })); // Handle JSON request payload
 app.use(cors({ origin: "http://localhost:3000", credentials: true }));
+
+app.use(morgan('dev'));
+app.use(cookieParser());
 
 // MongoDB connection
 mongoose

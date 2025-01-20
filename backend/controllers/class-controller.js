@@ -4,7 +4,11 @@ const Subject = require('../models/subjectSchema.js');
 const Teacher = require('../models/teacherSchema.js');
 
 const sclassCreate = async (req, res) => {
+
     try {
+        if(req.body.adminID !== req.user.id){
+return res.send({message: "You are not authorized to create class in this school"})
+        }
         const sclass = new Sclass({
             sclassName: req.body.sclassName,
             school: req.body.adminID
@@ -14,6 +18,8 @@ const sclassCreate = async (req, res) => {
             sclassName: req.body.sclassName,
             school: req.body.adminID
         });
+
+        
 
         if (existingSclassByName) {
             res.send({ message: 'Sorry this class name already exists' });
@@ -73,21 +79,39 @@ const getSclassStudents = async (req, res) => {
 
 const deleteSclass = async (req, res) => {
     try {
-        const deletedClass = await Sclass.findByIdAndDelete(req.params.id);
-        if (!deletedClass) {
-            return res.send({ message: "Class not found" });
+        const sclass = await Sclass.findById(req.params.id);
+        if (!sclass) {
+            return res.status(404).json({ message: "Class not found" });
         }
+        if(sclass.school.toString() !== req.user._id.toString()){
+            return res.status(401).json({message: "You are not authorized to delete this class"})
+        }
+        const deletedClass = await Sclass.findByIdAndDelete(req.params.id);
+      
         const deletedStudents = await Student.deleteMany({ sclassName: req.params.id });
         const deletedSubjects = await Subject.deleteMany({ sclassName: req.params.id });
         const deletedTeachers = await Teacher.deleteMany({ teachSclass: req.params.id });
-        res.send(deletedClass);
+        res.status(200).json({
+            message: "Class deleted successfully",
+            deletedClass,
+            deletedStudents,
+            deletedSubjects,
+            deletedTeachers
+        });
     } catch (error) {
         res.status(500).json(error);
     }
 }
 
+// Delete all classes in a school
+//Note: This is a dangerous operation, it will delete all classes, students, subjects and teachers in a school
+//Only an admin should be able to perform this operation
+
 const deleteSclasses = async (req, res) => {
     try {
+        if(req.params.id !== req.user.id){
+            return res.send({message: "You are not authorized to delete classes in this school"})
+        }
         const deletedClasses = await Sclass.deleteMany({ school: req.params.id });
         if (deletedClasses.deletedCount === 0) {
             return res.send({ message: "No classes found to delete" });

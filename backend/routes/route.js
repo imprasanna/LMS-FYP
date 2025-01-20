@@ -1,5 +1,7 @@
 const router = require("express").Router();
 
+const { protectsAdmin, restrictTo } = require("../controllers/auth-middleware.js");
+
 const {
   adminRegister,
   adminLogIn,
@@ -69,14 +71,12 @@ const { upload, uploadFile } = require("../controllers/uploads-controller");
 router.post("/AdminReg", adminRegister);
 router.post("/AdminLogin", adminLogIn);
 
-router.get("/Admin/:id", getAdminDetail);
-// router.delete("/Admin/:id", deleteAdmin)
+router.get("/Admin/:id",protectsAdmin,restrictTo("Admin"), getAdminDetail);
 
-// router.put("/Admin/:id", updateAdmin)
 
 // Student
 
-router.post("/StudentReg", studentRegister);
+router.post("/StudentReg", protectsAdmin, restrictTo("Admin"), studentRegister);
 router.post("/StudentLogin", studentLogIn);
 
 router.get("/Students/:id", getStudents);
@@ -136,15 +136,15 @@ router.get("/ComplainList/:id", complainList);
 
 // Sclass
 
-router.post("/SclassCreate", sclassCreate);
+router.post("/SclassCreate",protectsAdmin, restrictTo("Admin"), sclassCreate);
 
 router.get("/SclassList/:id", sclassList);
 router.get("/Sclass/:id", getSclassDetail);
 
 router.get("/Sclass/Students/:id", getSclassStudents);
 
-router.delete("/Sclasses/:id", deleteSclasses);
-router.delete("/Sclass/:id", deleteSclass);
+router.delete("/Sclasses/:id",protectsAdmin, restrictTo("Admin"), deleteSclasses);
+router.delete("/Sclass/:id",protectsAdmin, restrictTo("Admin"), deleteSclass);
 
 // Subject
 
