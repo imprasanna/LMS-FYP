@@ -98,6 +98,14 @@ export const getTeacherFreeClassSubjects = (id) => async (dispatch) => {
   }
 };
 
+export const deleteSubject = (id) => async (dispatch) => {
+  try {
+    await axios.delete(`${process.env.REACT_APP_BASE_URL}/Subject/${id}`);
+  } catch (error) {
+    throw error;
+  }
+};
+
 export const getSubjectDetails = (id, address) => async (dispatch) => {
   dispatch(getSubDetailsRequest());
 
