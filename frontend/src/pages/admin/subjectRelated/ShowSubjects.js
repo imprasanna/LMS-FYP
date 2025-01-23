@@ -2,10 +2,7 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-import {
-  deleteClass,
-  deleteSubject,
-} from "../../../redux/sclassRelated/sclassHandle"; // Import delete action
+import { deleteSubject } from "../../../redux/sclassRelated/sclassHandle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Paper, Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -13,7 +10,7 @@ import TableTemplate from "../../../components/TableTemplate";
 import { BlueButton, GreenButton } from "../../../components/buttonStyles";
 import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
-import ConfirmationDialog from "../../../components/ConfirmationDialog"; // Import ConfirmationDialog
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 
 const ShowSubjects = () => {
   const navigate = useNavigate();
