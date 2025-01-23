@@ -13,14 +13,14 @@ import {
   Box,
   IconButton,
 } from "@mui/material";
-import { deleteTeacher } from "../../../redux/teacherRelated/teacherHandle"; // Assuming deleteTeacher is defined
+import { deleteTeacher } from "../../../redux/teacherRelated/teacherHandle";
 import PersonRemoveIcon from "@mui/icons-material/PersonRemove";
 import { StyledTableCell, StyledTableRow } from "../../../components/styles";
 import { BlueButton, GreenButton } from "../../../components/buttonStyles";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
 import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
-import ConfirmationDialog from "../../../components/ConfirmationDialog"; // Assuming you have a shared ConfirmationDialog component
+import ConfirmationDialog from "../../../components/ConfirmationDialog";
 
 const ShowTeachers = () => {
   const [page, setPage] = useState(0);
