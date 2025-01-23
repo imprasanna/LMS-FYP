@@ -105,6 +105,7 @@ const ShowClasses = () => {
     ];
     return (
       <ButtonContainer>
+        {/* look here also for triggering confirmation dialog ------------------------------------------*/}
         <IconButton onClick={() => openConfirmDialog(row.id)} color="secondary">
           <DeleteIcon color="error" />
         </IconButton>
