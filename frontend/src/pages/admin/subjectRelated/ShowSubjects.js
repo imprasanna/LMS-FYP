@@ -2,7 +2,10 @@ import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-import { deleteUser } from "../../../redux/userRelated/userHandle";
+import {
+  deleteClass,
+  deleteSubject,
+} from "../../../redux/sclassRelated/sclassHandle"; // Import delete action
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Paper, Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
@@ -10,6 +13,7 @@ import TableTemplate from "../../../components/TableTemplate";
 import { BlueButton, GreenButton } from "../../../components/buttonStyles";
 import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
 import Popup from "../../../components/Popup";
+import ConfirmationDialog from "../../../components/ConfirmationDialog"; // Import ConfirmationDialog
 
 const ShowSubjects = () => {
   const navigate = useNavigate();
@@ -29,12 +33,37 @@ const ShowSubjects = () => {
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
+  const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
+  const [deleteID, setDeleteID] = useState(null);
 
-  const deleteHandler = (deleteID, address) => {
-    console.log(deleteID);
-    console.log(address);
-    setMessage("Sorry the delete function has been disabled for now.");
-    setShowPopup(true);
+  const openConfirmDialog = (id) => {
+    setDeleteID(id);
+    setConfirmDialogOpen(true);
+  };
+
+  const closeConfirmDialog = () => {
+    setConfirmDialogOpen(false);
+    setDeleteID(null);
+  };
+
+  const deleteHandler = async (deleteID) => {
+    try {
+      await dispatch(deleteSubject(deleteID));
+      setMessage("Subject deleted successfully.");
+      dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+    } catch (err) {
+      setMessage("Failed to delete class. Please try again.");
+      console.error(err);
+    } finally {
+      setShowPopup(true);
+    }
+  };
+
+  const confirmDelete = () => {
+    if (deleteID) {
+      deleteHandler(deleteID);
+    }
+    closeConfirmDialog();
   };
 
   const subjectColumns = [
@@ -56,7 +85,7 @@ const ShowSubjects = () => {
   const SubjectsButtonHaver = ({ row }) => {
     return (
       <>
-        <IconButton onClick={() => deleteHandler(row.id, "Subject")}>
+        <IconButton onClick={() => openConfirmDialog(row.id)}>
           <DeleteIcon color="error" />
         </IconButton>
         <BlueButton
@@ -123,6 +152,13 @@ const ShowSubjects = () => {
         message={message}
         setShowPopup={setShowPopup}
         showPopup={showPopup}
+      />
+      <ConfirmationDialog
+        open={confirmDialogOpen}
+        onClose={closeConfirmDialog}
+        onConfirm={confirmDelete}
+        title="Confirm Delete"
+        message="Are you sure you want to delete this subject? This action cannot be undone."
       />
     </>
   );

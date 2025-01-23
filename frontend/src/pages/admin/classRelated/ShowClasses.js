@@ -63,10 +63,8 @@ const ShowClasses = () => {
   };
 
   const [confirmDialogOpen, setConfirmDialogOpen] = useState(false);
-  // ----------------------------------------------------------------------------------
   const [deleteID, setDeleteID] = useState(null);
 
-  // -------------------------------------------------------------------------------
   const openConfirmDialog = (id) => {
     setDeleteID(id);
     setConfirmDialogOpen(true);
