@@ -4,8 +4,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import {
   getClassDetails,
   getClassStudents,
-  getSubjectList,
 } from "../../../redux/sclassRelated/sclassHandle";
+import { getSubjectList } from "../../../redux/subjectRelated/subjectHandle";
 import { getAllTeachers } from "../../../redux/teacherRelated/teacherHandle";
 import { Box, Container, Typography } from "@mui/material";
 import TabContext from "@mui/lab/TabContext";

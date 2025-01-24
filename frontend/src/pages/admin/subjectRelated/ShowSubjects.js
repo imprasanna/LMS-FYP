@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-import { deleteSubject } from "../../../redux/sclassRelated/sclassHandle";
+// import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
+// import { deleteSubject } from "../../../redux/sclassRelated/sclassHandle";
+import {
+  getSubjectList,
+  deleteSubject,
+} from "../../../redux/subjectRelated/subjectHandle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Paper, Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";

@@ -2,7 +2,8 @@ import React, { useEffect, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import { getUserDetails } from '../../../redux/userRelated/userHandle';
-import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
+// import { getSubjectList } from '../../../redux/sclassRelated/sclassHandle';
+import { getSubjectList } from "../../../redux/subjectRelated/subjectHandle";
 import { updateStudentFields } from '../../../redux/studentRelated/studentHandle';
 
 import Popup from '../../../components/Popup';

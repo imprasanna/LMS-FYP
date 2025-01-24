@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
-import {
-  getClassStudents,
-  getSubjectDetails,
-} from "../../../redux/sclassRelated/sclassHandle";
+import { getClassStudents } from "../../../redux/sclassRelated/sclassHandle";
+import { getSubjectDetails } from "../../../redux/subjectRelated/subjectHandle";
 import { useNavigate, useParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import {
