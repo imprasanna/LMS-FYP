@@ -71,6 +71,7 @@ router.delete("/TeachersClass/:id", deleteTeachersByClass)
 router.delete("/Teacher/:id", deleteTeacher)
 
 router.put("/TeacherSubject", updateTeacherSubject)
+router.get("/TeacherSubjects/:id", teacherSubjects);
 
 router.post('/TeacherAttendance/:id', teacherAttendance)
 

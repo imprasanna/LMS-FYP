@@ -40,6 +40,23 @@ export const getTeacherDetails = (id) => async (dispatch) => {
   }
 };
 
+export const getSubjectList = (teacherId) => async (dispatch) => {
+  dispatch(getRequest());
+
+  try {
+    const result = await axios.get(
+      `${process.env.REACT_APP_BASE_URL}/TeacherSubjects/${teacherId}`
+    );
+    if (result.data.message) {
+      dispatch(getFailed(result.data.message));
+    } else {
+      dispatch(getSuccess(result.data));
+    }
+  } catch (error) {
+    dispatch(getError(error));
+  }
+};
+
 export const updateTeachSubject =
   (teacherId, teachSubject) => async (dispatch) => {
     dispatch(getRequest());

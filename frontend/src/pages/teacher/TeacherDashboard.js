@@ -23,6 +23,7 @@ import TeacherViewStudent from "./TeacherViewStudent";
 import StudentExamMarks from "../admin/studentRelated/StudentExamMarks";
 import TeacherStudentList from "./TeacherStudentList";
 import TeacherSubjectList from "./TeacherSubjectList";
+import TeacherSubjectChapters from "./TeacherSubjectChapters";
 
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true);
@@ -85,6 +86,11 @@ const TeacherDashboard = () => {
 
             <Route path="/Teacher/student" element={<TeacherStudentList />} />
             <Route path="/Teacher/subject" element={<TeacherSubjectList />} />
+            <Route
+              path="/Teacher/subject/chapter"
+              element={<TeacherSubjectChapters />}
+            />
+
             <Route
               path="/Teacher/class/student/:id"
               element={<TeacherViewStudent />}

@@ -86,7 +86,7 @@ const ShowSubjects = () => {
           <DeleteIcon color="error" />
         </IconButton>
         <BlueButton
-          variant="contained"
+          variant="contained"f
           onClick={() =>
             navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)
           }
