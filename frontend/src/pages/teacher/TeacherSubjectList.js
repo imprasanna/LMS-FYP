@@ -6,50 +6,55 @@ import TableTemplate from "../../components/TableTemplate";
 
 const ShowSubjects = () => {
   const dispatch = useDispatch();
+
   const { subjectsList, loading, error } = useSelector(
     (state) => state.subject
   );
-  const { currentUser } = useSelector((state) => state.user);
+  const { currentUser, currentRole } = useSelector((state) => state.user);
 
   useEffect(() => {
-    if (currentUser?._id) {
-      dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+    if (currentRole === "Teacher" && currentUser?._id) {
+      dispatch(getSubjectList(currentUser._id, "TeacherSubjects"));
     }
-  }, [currentUser?._id, dispatch]);
+  }, [currentRole, currentUser?._id, dispatch]);
 
   if (error) {
-    console.log(error);
+    console.error("Error fetching subjects:", error);
   }
 
   const subjectColumns = [
-    { id: "subName", label: "Sub Name", minWidth: 170 },
+    { id: "subName", label: "Subject Name", minWidth: 170 },
     { id: "sessions", label: "Sessions", minWidth: 170 },
     { id: "sclassName", label: "Class", minWidth: 170 },
   ];
 
+  // Filter and map subjects for rows
   const subjectRows = Array.isArray(subjectsList)
-    ? subjectsList.map((subject) => ({
-        subName: subject.subName || "N/A",
-        sessions: subject.sessions || 0,
-        sclassName: subject.sclassName?.sclassName || "N/A",
-        id: subject._id,
-      }))
+    ? subjectsList
+        .filter((subject) => subject.sclassName)
+        .map((subject) => ({
+          subName: subject.subName || "N/A",
+          sessions: subject.sessions || 0,
+          sclassName: subject.sclassName?.sclassName || "N/A",
+          sclassID: subject.sclassName?._id || "",
+          id: subject._id,
+        }))
     : [];
 
   return (
-    <>
+    <Paper sx={{ width: "100%", overflow: "hidden" }}>
       {loading ? (
         <div>Loading...</div>
+      ) : currentRole !== "Teacher" ? (
+        <div>Unauthorized: Only teachers can view this section.</div>
       ) : (
-        <Paper sx={{ width: "100%", overflow: "hidden" }}>
-          {Array.isArray(subjectsList) && subjectsList.length > 0 ? (
-            <TableTemplate columns={subjectColumns} rows={subjectRows} />
-          ) : (
-            <div>No subjects available</div>
-          )}
-        </Paper>
+        <TableTemplate
+          columns={subjectColumns}
+          rows={subjectRows}
+          buttonHaver={() => <div>No actions available</div>}
+        />
       )}
-    </>
+    </Paper>
   );
 };
 

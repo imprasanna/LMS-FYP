@@ -4,8 +4,6 @@ import CountUp from "react-countup";
 import styled from "styled-components";
 import Students from "../../assets/img1.png";
 import Lessons from "../../assets/subjects.svg";
-import Tests from "../../assets/assignment.svg";
-import Time from "../../assets/time.svg";
 import { getClassStudents } from "../../redux/sclassRelated/sclassHandle";
 import { getSubjectDetails } from "../../redux/subjectRelated/subjectHandle";
 import { useDispatch, useSelector } from "react-redux";
@@ -15,9 +13,9 @@ const TeacherHomePage = () => {
   const dispatch = useDispatch();
 
   const { currentUser } = useSelector((state) => state.user);
-  const { subjectDetails, sclassStudents } = useSelector(
-    (state) => state.sclass
-  );
+  const { subjectDetails } = useSelector((state) => state.subject);
+
+  const { sclassStudents } = useSelector((state) => state.sclass);
 
   const classID = currentUser.teachSclass?._id;
   const subjectID = currentUser.teachSubject?._id;
@@ -41,6 +39,7 @@ const TeacherHomePage = () => {
               <Data start={0} end={numberOfStudents} duration={2.5} />
             </StyledPaper>
           </Grid>
+
           <Grid item xs={12} md={3} lg={3}>
             <StyledPaper>
               <img src={Lessons} alt="Lessons" />
@@ -48,20 +47,7 @@ const TeacherHomePage = () => {
               <Data start={0} end={numberOfSessions} duration={5} />
             </StyledPaper>
           </Grid>
-          <Grid item xs={12} md={3} lg={3}>
-            <StyledPaper>
-              <img src={Tests} alt="Tests" />
-              <Title>Tests Taken</Title>
-              <Data start={0} end={24} duration={4} />
-            </StyledPaper>
-          </Grid>
-          <Grid item xs={12} md={3} lg={3}>
-            <StyledPaper>
-              <img src={Time} alt="Time" />
-              <Title>Total Hours</Title>
-              <Data start={0} end={30} duration={4} suffix="hrs" />{" "}
-            </StyledPaper>
-          </Grid>
+
           <Grid item xs={12}>
             <Paper sx={{ p: 2, display: "flex", flexDirection: "column" }}>
               <SeeNotice />

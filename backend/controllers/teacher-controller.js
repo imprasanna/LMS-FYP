@@ -184,11 +184,27 @@ const deleteTeachersByClass = async (req, res) => {
   }
 };
 
+// const teacherSubjects = async (req, res) => {
+//   try {
+//     const subjects = await Subject.find({ teacher: req.params.id }).select(
+//       "subName sessions"
+//     );
+
+//     if (subjects.length > 0) {
+//       res.send(subjects);
+//     } else {
+//       res.send({ message: "No subjects found for this teacher" });
+//     }
+//   } catch (err) {
+//     res.status(500).json(err);
+//   }
+// };
+
 const teacherSubjects = async (req, res) => {
   try {
-    const subjects = await Subject.find({ teacher: req.params.id }).select(
-      "subName sessions"
-    );
+    const subjects = await Subject.find({ teacher: req.params.id })
+      .select("subName sessions")
+      .populate("sclassName", "sclassName");
 
     if (subjects.length > 0) {
       res.send(subjects);
