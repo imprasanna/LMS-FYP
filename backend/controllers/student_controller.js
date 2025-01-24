@@ -146,6 +146,11 @@ const updateStudent = async (req, res) => {
 const updateExamResult = async (req, res) => {
     const { subName, marksObtained } = req.body;
 
+    //limit the marksObtained to 100
+    if (marksObtained > 100) {
+        return res.send({ message: 'Marks obtained cannot exceed 100' });
+    }
+
     try {
         const student = await Student.findById(req.params.id);
 
