@@ -188,7 +188,7 @@ const teacherSubjects = async (req, res) => {
   try {
     const subjects = await Subject.find({ teacher: req.params.id }).select(
       "subName sessions"
-    ); // Selecting only necessary fields
+    );
 
     if (subjects.length > 0) {
       res.send(subjects);

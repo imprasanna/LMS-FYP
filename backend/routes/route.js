@@ -69,6 +69,7 @@ const {
   deleteTeacher,
   updateTeacherSubject,
   teacherAttendance,
+  teacherSubjects,
 } = require("../controllers/teacher-controller.js");
 
 // Admin
