@@ -1,16 +1,16 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-import { deleteSubject } from "../../../redux/sclassRelated/sclassHandle";
+import { getSubjectList } from "../../redux/sclassRelated/sclassHandle";
+import { deleteSubject } from "../../redux/sclassRelated/sclassHandle";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import { Paper, Box, IconButton } from "@mui/material";
 import DeleteIcon from "@mui/icons-material/Delete";
-import TableTemplate from "../../../components/TableTemplate";
-import { BlueButton, GreenButton } from "../../../components/buttonStyles";
-import SpeedDialTemplate from "../../../components/SpeedDialTemplate";
-import Popup from "../../../components/Popup";
-import ConfirmationDialog from "../../../components/ConfirmationDialog";
+import TableTemplate from "../../components/TableTemplate";
+import { BlueButton, GreenButton } from "../../components/buttonStyles";
+import SpeedDialTemplate from "../../components/SpeedDialTemplate";
+import Popup from "../../components/Popup";
+import ConfirmationDialog from "../../components/ConfirmationDialog";
 
 const ShowSubjects = () => {
   const navigate = useNavigate();
@@ -86,7 +86,8 @@ const ShowSubjects = () => {
           <DeleteIcon color="error" />
         </IconButton>
         <BlueButton
-          variant="contained"f
+          variant="contained"
+          f
           onClick={() =>
             navigate(`/Admin/subjects/subject/${row.sclassID}/${row.id}`)
           }
