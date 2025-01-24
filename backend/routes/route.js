@@ -1,6 +1,6 @@
 const router = require('express').Router();
 
-// const { adminRegister, adminLogIn, deleteAdmin, getAdminDetail, updateAdmin } = require('../controllers/admin-controller.js');
+const {uploadVideo, getAllVideos, getVideo, editVideo, deleteVideo} = require("../controllers/uploadController.js")
 
 const { adminRegister, adminLogIn, getAdminDetail} = require('../controllers/admin-controller.js');
 
@@ -115,5 +115,13 @@ router.get("/Subject/:id", getSubjectDetail)
 router.delete("/Subject/:id", deleteSubject)
 router.delete("/Subjects/:id", deleteSubjects)
 router.delete("/SubjectsClass/:id", deleteSubjectsByClass)
+
+
+// Video Upload
+router.post('/teacher/video', uploadVideo);
+router.post('/teacher/video/all', getAllVideos);
+router.post('/teacher/video/single', getVideo);
+router.put('/teacher/video', editVideo);
+router.post('/teacher/video/delete', deleteVideo);
 
 module.exports = router;
