@@ -1,8 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
-// import { getSubjectList } from "../../../redux/sclassRelated/sclassHandle";
-// import { deleteSubject } from "../../../redux/sclassRelated/sclassHandle";
 import {
   getSubjectList,
   deleteSubject,
@@ -20,7 +18,7 @@ const ShowSubjects = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { subjectsList, loading, error, response } = useSelector(
-    (state) => state.sclass
+    (state) => state.subject
   );
   const { currentUser } = useSelector((state) => state.user);
 

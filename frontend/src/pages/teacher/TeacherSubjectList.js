@@ -6,12 +6,16 @@ import TableTemplate from "../../components/TableTemplate";
 
 const ShowSubjects = () => {
   const dispatch = useDispatch();
-  const { subjectsList, loading, error } = useSelector((state) => state.sclass);
+  const { subjectsList, loading, error } = useSelector(
+    (state) => state.subject
+  );
   const { currentUser } = useSelector((state) => state.user);
 
   useEffect(() => {
-    dispatch(getSubjectList(currentUser._id, "AllSubjects"));
-  }, [currentUser._id, dispatch]);
+    if (currentUser?._id) {
+      dispatch(getSubjectList(currentUser._id, "AllSubjects"));
+    }
+  }, [currentUser?._id, dispatch]);
 
   if (error) {
     console.log(error);
