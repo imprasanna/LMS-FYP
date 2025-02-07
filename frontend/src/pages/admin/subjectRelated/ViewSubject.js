@@ -31,8 +31,11 @@ const ViewSubject = () => {
   const navigate = useNavigate();
   const params = useParams();
   const dispatch = useDispatch();
-  const { subloading, subjectDetails, sclassStudents, getresponse, error } =
-    useSelector((state) => state.sclass);
+  const { subloading, sclassStudents, getresponse, error } = useSelector(
+    (state) => state.sclass
+  );
+
+  const { subjectDetails } = useSelector((state) => state.subject);
 
   const { classID, subjectID } = params;
 
