@@ -20,6 +20,7 @@ import TableTemplate from "../../../components/TableTemplate";
 import SpeedDialIcon from "@mui/material/SpeedDialIcon";
 import PostAddIcon from "@mui/icons-material/PostAdd";
 import PersonAddAlt1Icon from "@mui/icons-material/PersonAddAlt1";
+
 import styled from "styled-components";
 import Popup from "../../../components/Popup";
 
@@ -38,7 +39,7 @@ const ShowClasses = () => {
   const adminID = currentUser._id;
 
   useEffect(() => {
-    dispatch(getAllSclasses(adminID, "Sclass"));
+    dispatch(getAllSclasses(adminID, "SclassList"));
   }, [adminID, dispatch]);
 
   if (error) {

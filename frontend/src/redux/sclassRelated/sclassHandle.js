@@ -12,8 +12,9 @@ export const getAllSclasses = (id, address) => async (dispatch) => {
   dispatch(getRequest());
   try {
     const result = await axios.get(
-      `${process.env.REACT_APP_BASE_URL}/${address}List/${id}`
+      `${process.env.REACT_APP_BASE_URL}/SclassList/${id}`
     );
+    console.log("API Response:", result.data);
     if (result.data.message) {
       dispatch(getFailedTwo(result.data.message));
     } else {

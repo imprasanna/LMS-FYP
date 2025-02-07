@@ -18,9 +18,12 @@ const ClassDetails = () => {
   const params = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { subjectsList, sclassStudents, sclassDetails, loading } = useSelector(
+  const { sclassStudents, sclassDetails, loading } = useSelector(
     (state) => state.sclass
   );
+
+  const { subjectsList } = useSelector((state) => state.subject);
+
   const { teachersList } = useSelector((state) => state.teacher);
 
   const classID = params.id;
