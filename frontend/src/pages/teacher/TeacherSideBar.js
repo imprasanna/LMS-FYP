@@ -7,6 +7,7 @@ import ExitToAppIcon from "@mui/icons-material/ExitToApp";
 import AccountCircleOutlinedIcon from "@mui/icons-material/AccountCircleOutlined";
 import AnnouncementOutlinedIcon from '@mui/icons-material/AnnouncementOutlined';
 import ClassOutlinedIcon from '@mui/icons-material/ClassOutlined';
+import QuizIcon from '@mui/icons-material/Quiz';
 import { useSelector } from 'react-redux';
 
 const TeacherSideBar = () => {
@@ -35,6 +36,21 @@ const TeacherSideBar = () => {
                     </ListItemIcon>
                     <ListItemText primary="Complain" />
                 </ListItemButton>
+
+
+                {/* side bar for Result section */}
+                <ListItemButton component={Link} to="/Teacher/result">
+                    <ListItemIcon>
+                        <QuizIcon color={location.pathname.startsWith("/Teacher/result") ? 'primary' : 'inherit'} />
+                    </ListItemIcon>
+                    <ListItemText primary="Result" />
+                </ListItemButton>
+
+
+
+
+
+
             </React.Fragment>
             <Divider sx={{ my: 1 }} />
             <React.Fragment>
