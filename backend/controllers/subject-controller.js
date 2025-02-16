@@ -37,7 +37,7 @@ const subjectCreate = async (req, res) => {
 const allSubjects = async (req, res) => {
   try {
     let subjects = await Subject.find({ school: req.params.id }).populate(
-      "sclassName",
+      "teachSclass",
       "sclassName"
     );
     if (subjects.length > 0) {

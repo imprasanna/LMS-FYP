@@ -14,6 +14,7 @@ const ShowSubjects = () => {
 
   useEffect(() => {
     if (currentRole === "Teacher" && currentUser?._id) {
+      console.log("Fetching subjects for teacher:", currentUser._id);
       dispatch(getSubjectList(currentUser._id, "TeacherSubjects"));
     }
   }, [currentRole, currentUser?._id, dispatch]);

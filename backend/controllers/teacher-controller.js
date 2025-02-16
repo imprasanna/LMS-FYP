@@ -94,22 +94,20 @@ const getTeacherDetail = async (req, res) => {
   }
 };
 
-const updateTeacherSubject = async (req, res) => {
-  const { teacherId, teachSubject } = req.body;
+const teacherSubjects = async (req, res) => {
   try {
-    const updatedTeacher = await Teacher.findByIdAndUpdate(
-      teacherId,
-      { teachSubject },
-      { new: true }
-    );
+    const subjects = await Subject.find({ teacher: req.params.id })
+      .select("subName sessions sclassName")
+      .populate("sclassName", "sclassName"); // Populating sclassName
 
-    await Subject.findByIdAndUpdate(teachSubject, {
-      teacher: updatedTeacher._id,
-    });
-
-    res.send(updatedTeacher);
-  } catch (error) {
-    res.status(500).json(error);
+    if (subjects.length > 0) {
+      res.send(subjects);
+    } else {
+      res.send({ message: "No subjects found for this teacher" });
+    }
+  } catch (err) {
+    console.error("Error fetching teacher subjects:", err);
+    res.status(500).json(err);
   }
 };
 
@@ -181,38 +179,6 @@ const deleteTeachersByClass = async (req, res) => {
     res.send(deletionResult);
   } catch (error) {
     res.status(500).json(error);
-  }
-};
-
-// const teacherSubjects = async (req, res) => {
-//   try {
-//     const subjects = await Subject.find({ teacher: req.params.id }).select(
-//       "subName sessions"
-//     );
-
-//     if (subjects.length > 0) {
-//       res.send(subjects);
-//     } else {
-//       res.send({ message: "No subjects found for this teacher" });
-//     }
-//   } catch (err) {
-//     res.status(500).json(err);
-//   }
-// };
-
-const teacherSubjects = async (req, res) => {
-  try {
-    const subjects = await Subject.find({ teacher: req.params.id })
-      .select("subName sessions")
-      .populate("sclassName", "sclassName");
-
-    if (subjects.length > 0) {
-      res.send(subjects);
-    } else {
-      res.send({ message: "No subjects found for this teacher" });
-    }
-  } catch (err) {
-    res.status(500).json(err);
   }
 };
 

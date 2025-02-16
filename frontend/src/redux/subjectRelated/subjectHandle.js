@@ -8,30 +8,16 @@ import {
   getSubDetailsSuccess,
 } from "./subjectSlice";
 
-// export const getSubjectList = (id, address) => async (dispatch) => {
-//   dispatch(getRequest());
-//   try {
-//     const result = await axios.get(
-//       `${process.env.REACT_APP_BASE_URL}/${address}/AllSubjects/${id}`
-//     );
-//     if (result.data.message) {
-//       dispatch(getFailed(result.data.message));
-//     } else {
-//       dispatch(getSubjectsSuccess(result.data));
-//     }
-//   } catch (error) {
-//     dispatch(getError(error));
-//   }
-// };
-
 export const getSubjectList = (id, address) => async (dispatch) => {
   dispatch(getRequest());
   try {
-    const result = await axios.get(
-      `${process.env.REACT_APP_BASE_URL}/${address}/${id}`
-    );
+    const endpoint = `${process.env.REACT_APP_BASE_URL}/${address}/${id}`;
+    console.log("Fetching subjects from:", endpoint);
+    const result = await axios.get(endpoint);
+
     console.log("API Response:", result.data);
     if (result.data.message) {
+      console.warn("No subjects found:", result.data.message);
       dispatch(getFailed(result.data.message));
     } else {
       dispatch(getSubjectsSuccess(result.data));
