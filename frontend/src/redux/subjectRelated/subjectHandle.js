@@ -15,7 +15,7 @@ export const getSubjectList = (id, address) => async (dispatch) => {
     console.log("Fetching subjects from:", endpoint);
     const result = await axios.get(endpoint);
 
-    console.log("API Response:", result.data);
+    // console.log("API Response:", result.data);
     if (result.data.message) {
       console.warn("No subjects found:", result.data.message);
       dispatch(getFailed(result.data.message));

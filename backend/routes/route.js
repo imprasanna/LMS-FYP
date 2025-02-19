@@ -67,9 +67,9 @@ const {
   deleteTeachers,
   deleteTeachersByClass,
   deleteTeacher,
-  updateTeacherSubject,
+  // updateTeacherSubject,
   teacherAttendance,
-  teacherSubjects,
+  getTeacherSubject,
 } = require("../controllers/teacher-controller.js");
 
 // Admin
@@ -120,8 +120,10 @@ router.delete("/Teachers/:id", deleteTeachers);
 router.delete("/TeachersClass/:id", deleteTeachersByClass);
 router.delete("/Teacher/:id", deleteTeacher);
 
-router.put("/TeacherSubject", updateTeacherSubject);
-router.get("/TeacherSubjects/:id", teacherSubjects);
+// router.put("/TeacherSubject", updateTeacherSubject);
+// router.get("/TeacherSubjects/:id", teacherSubjects);
+
+router.get("/TeacherSubject/:id", getTeacherSubject);
 
 router.post("/TeacherAttendance/:id", teacherAttendance);
 

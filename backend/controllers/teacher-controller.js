@@ -94,20 +94,36 @@ const getTeacherDetail = async (req, res) => {
   }
 };
 
-const teacherSubjects = async (req, res) => {
-  try {
-    const subjects = await Subject.find({ teacher: req.params.id })
-      .select("subName sessions sclassName")
-      .populate("sclassName", "sclassName"); // Populating sclassName
+// const teacherSubjects = async (req, res) => {
+//   try {
+//     const subjects = await Subject.find({ teacher: req.params.id })
+//       .select("subName sessions sclassName")
+//       .populate("sclassName", "sclassName"); // Populating sclassName
 
-    if (subjects.length > 0) {
-      res.send(subjects);
+//     if (subjects.length > 0) {
+//       res.send(subjects);
+//     } else {
+//       res.send({ message: "No subjects found for this teacher" });
+//     }
+//   } catch (err) {
+//     console.error("Error fetching teacher subjects:", err);
+//     res.status(500).json(err);
+//   }
+// };
+
+const getTeacherSubject = async (req, res) => {
+  try {
+    const teacher = await Teacher.findById(req.params.id);
+    if (teacher) {
+      const subject = await Subject.findById(teacher.teachSubject).populate(
+        "sclassName"
+      );
+      res.send(subject);
     } else {
-      res.send({ message: "No subjects found for this teacher" });
+      res.send({ message: "Teacher not found" });
     }
-  } catch (err) {
-    console.error("Error fetching teacher subjects:", err);
-    res.status(500).json(err);
+  } catch (error) {
+    res.status(500).json(error);
   }
 };
 
@@ -214,10 +230,10 @@ module.exports = {
   teacherLogIn,
   getTeachers,
   getTeacherDetail,
-  updateTeacherSubject,
+  // updateTeacherSubject,
   deleteTeacher,
   deleteTeachers,
   deleteTeachersByClass,
   teacherAttendance,
-  teacherSubjects,
+  getTeacherSubject,
 };

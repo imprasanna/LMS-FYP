@@ -15,7 +15,7 @@ const ShowSubjects = () => {
   useEffect(() => {
     if (currentRole === "Teacher" && currentUser?._id) {
       console.log("Fetching subjects for teacher:", currentUser._id);
-      dispatch(getSubjectList(currentUser._id, "TeacherSubjects"));
+      dispatch(getSubjectList(currentUser._id, "TeacherSubject"));
     }
   }, [currentRole, currentUser?._id, dispatch]);
 
@@ -29,25 +29,37 @@ const ShowSubjects = () => {
     { id: "sclassName", label: "Class", minWidth: 170 },
   ];
 
-  // Filter and map subjects for rows
-  const subjectRows = Array.isArray(subjectsList)
+  console.log("Subjects List from Redux:", subjectsList);
+
+  // Ensure subjectsList is always an array
+  const formattedSubjects = Array.isArray(subjectsList)
     ? subjectsList
-        .filter((subject) => subject.sclassName)
-        .map((subject) => ({
-          subName: subject.subName || "N/A",
-          sessions: subject.sessions || 0,
-          sclassName: subject.sclassName?.sclassName || "N/A",
-          sclassID: subject.sclassName?._id || "",
-          id: subject._id,
-        }))
+    : subjectsList && typeof subjectsList === "object"
+    ? [subjectsList] // Convert single object to an array
     : [];
 
+  const subjectRows = formattedSubjects.map((subject) => ({
+    subName: subject.subName || "N/A",
+    sessions: subject.sessions || 0,
+    sclassName:
+      typeof subject.sclassName === "object"
+        ? subject.sclassName.sclassName
+        : String(subject.sclassName) || "N/A",
+    sclassID:
+      typeof subject.sclassName === "object"
+        ? subject.sclassName._id
+        : String(subject.sclassName) || "",
+    id: subject._id,
+  }));
+
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden" }}>
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
       {loading ? (
         <div>Loading...</div>
       ) : currentRole !== "Teacher" ? (
         <div>Unauthorized: Only teachers can view this section.</div>
+      ) : subjectRows.length === 0 ? (
+        <div>No subjects found.</div>
       ) : (
         <TableTemplate
           columns={subjectColumns}
