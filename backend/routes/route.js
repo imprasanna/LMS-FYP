@@ -2,7 +2,7 @@ const router = require('express').Router();
 
 const {uploadVideo, getAllVideos, getVideo, editVideo, deleteVideo} = require("../controllers/uploadController.js")
 
-const { getAllStudentsMarksBySubject, editStudentMarks, deleteStudentMarks} = require("../controllers/result-controller.js")
+const { getAllStudentsMarksBySubject, editStudentMarks, deleteStudentMarks, downloadStudentResult} = require("../controllers/result-controller.js")
 
 const { adminRegister, adminLogIn, getAdminDetail} = require('../controllers/admin-controller.js');
 
@@ -133,5 +133,6 @@ router.post('/teacher/video/delete', deleteVideo);
 router.post("/teacher/result", getAllStudentsMarksBySubject);
 router.post("/teacher/result/update", editStudentMarks);
 router.post("/teacher/result/delete", deleteStudentMarks);
+router.post("/teacher/result/download", downloadStudentResult);
 
 module.exports = router;

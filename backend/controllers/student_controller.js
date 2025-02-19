@@ -185,6 +185,18 @@ const studentAttendance = async (req, res) => {
             return res.send({ message: 'Student not found' });
         }
 
+              // Convert the provided date to a Date object and compare with the current date
+              const attendanceDate = new Date(date);
+              const today = new Date();
+      
+              // Set the time to midnight to compare only the date
+              attendanceDate.setHours(0, 0, 0, 0);
+              today.setHours(0, 0, 0, 0);
+      
+              if (attendanceDate > today) {
+                  return res.send({ message: 'You are not allowed to take attendance for a future date' });
+              }
+
         const subject = await Subject.findById(subName);
 
         const existingAttendance = student.attendance.find(

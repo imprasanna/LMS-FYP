@@ -1,4 +1,6 @@
 import React, { useState, useEffect } from "react";
+import {LightPurpleButton, PurpleButton} from "../../components/buttonStyles";
+import { Box } from "@mui/material";
 import { useSelector } from "react-redux";
 import { apiRequest } from "../../utils/apiFetch";
 import TableWithActions from "../../components/TableWithActions";
@@ -9,10 +11,13 @@ import EditDialogBox from "../../components/EditDialogBox";
 function Result() {
   const { showErrorSnackbar, showSuccessSnackbar } = useSnackBarController();
   const { currentUser } = useSelector((state) => state.user);
+  console.log(currentUser);
   const [result, setResult] = useState([]);
   const [error, setError] = useState(null);
   const [classId, setClassId] = useState(currentUser.teachSclass?._id.toString());
   const [subjectId, setSubjectId] = useState(currentUser.teachSubject?._id.toString());
+  const [teacherId, setTeacherId] = useState(currentUser._id.toString());
+  const [subject, setSubject] = useState("");
   const [useEffectDependency, setUseEffectDependency] = useState(0);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -69,12 +74,37 @@ function Result() {
     }
   };
 
+  const fetchSubject = async (url, method) => {
+    console.log("calling fetchSubject");
+    try {
+      const response = await apiRequest(url, method);
+      if (response.success) {
+      
+        setSubject(response.subName);
+      }
+    } catch (error) {
+      showErrorSnackbar(`Error: ${error.message}`);
+    }
+  };
+
   useEffect(() => {
+    console.log("Teacher id", teacherId);
     fetchAllResult("http://localhost:4000/teacher/result", "POST", {
       classId: classId,
       subjectId: subjectId,
     });
   }, [classId, subjectId, useEffectDependency]);
+
+  useEffect(() => {
+    // console.log("calling useEffect", teacherId);
+    // fetchSubject(`http://localhost:4000/TeacherSubject/${teacherId}`, "GET");
+    if (teacherId) {
+      console.log("Fetching subject with teacherId:", teacherId);
+      fetchSubject(`http://localhost:4000/TeacherSubject/${teacherId}`, "GET");
+    } else {
+      console.log("Skipping fetchSubject because teacherId is undefined");
+    }
+  }, [teacherId]);
 
   const columns = [
     { id: "id", label: "S.N", minWidth: 100, align: "center" },
@@ -124,9 +154,54 @@ function Result() {
     refetchResults();
   };
 
+
+
+  const handleDownload = async () => {
+    try {
+      const response = await fetch("http://localhost:4000/teacher/result/download", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ classId: classId, subjectId: subjectId }),
+      });
+  
+      if (!response.ok) {
+        throw new Error("Failed to download file");
+      }
+  
+      // Convert response to Blob
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+  
+      // Create a temporary <a> tag to trigger download
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "student_results.csv"; // Set filename
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+  
+      // Cleanup
+      window.URL.revokeObjectURL(url);
+      showSuccessSnackbar("Successfully downloaded  result!")
+    } catch (error) {
+      showErrorSnackbar("Error downloading result result!")
+    }
+  };
+  
+
   return (
     <div>
-      <h1 sx={{ margin: 2 }}>Result</h1>
+         <Box 
+      display="flex" 
+      flexDirection="row" 
+      justifyContent="space-between" 
+      // height="100vh" // Ensures the button is at the bottom
+      p={2}
+    >
+      <h1 sx={{ margin: 2 }}> Result</h1>
+      <PurpleButton onClick={handleDownload}>Downlaod Result</PurpleButton>
+
+    </Box>
       <TableWithActions
         columns={columns}
         rows={result}

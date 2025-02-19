@@ -1,3 +1,6 @@
+const fs = require('fs');
+const path = require('path');
+const fastCsv = require('fast-csv');
 const Student = require("../models/studentSchema")
 
 // K-Means Clustering Function
@@ -197,8 +200,41 @@ const deleteStudentMarks = async (req, res) => {
 }
 
 
+const downloadStudentResult = async (req, res) => {
+    try {
+        const { classId, subjectId } = req.body; // Consider using req.query for GET requests
+        if (!classId || !subjectId) {
+            return res.status(400).json({ success: false, message: "classId and subjectId are required" });
+        }
+
+        const studentResult = await getStudentMarksBySubject(classId, subjectId);
+        const optimalK = findOptimalK(studentResult);
+        const result = kMeansClustering(studentResult, optimalK);
+
+        res.setHeader("Content-Disposition", `attachment; filename=student_result_${classId}_${subjectId}.csv`);
+        res.setHeader("Content-Type", "text/csv");
+
+        const csvStream = fastCsv.format({ headers: true });
+        csvStream.pipe(res);
+
+        result.forEach(student => {
+            csvStream.write({
+                Name: student.name,
+                RollNumber: student.rollNum,
+                Marks: student.marks,
+                Grade: student.grade,
+            });
+        });
+
+        csvStream.end();
+    } catch (error) {
+        res.status(500).json({ success: false, message: "Internal Server Error", error: error.message });
+    }
+};
+
 module.exports = {
     getAllStudentsMarksBySubject,
     editStudentMarks,
-    deleteStudentMarks
+    deleteStudentMarks,
+    downloadStudentResult
 }
