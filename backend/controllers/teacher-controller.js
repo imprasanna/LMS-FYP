@@ -192,6 +192,20 @@ const teacherAttendance = async (req, res) => {
     }
 };
 
+const getTeacherSubject = async (req, res) => {
+    try {
+        const teacher = await Teacher.findById(req.params.id);
+        if (teacher) {
+            const subject = await Subject.findById(teacher.teachSubject);
+            res.send(subject);
+        } else {
+            res.send({ message: "Teacher not found" });
+        }
+    } catch (error) {
+        res.status(500).json(error);
+    }
+}
+
 module.exports = {
     teacherRegister,
     teacherLogIn,
@@ -201,5 +215,6 @@ module.exports = {
     deleteTeacher,
     deleteTeachers,
     deleteTeachersByClass,
-    teacherAttendance
+    teacherAttendance,
+    getTeacherSubject
 };
