@@ -24,6 +24,8 @@ import StudentExamMarks from "../admin/studentRelated/StudentExamMarks";
 import TeacherStudentList from "./TeacherStudentList";
 import TeacherSubjectList from "./TeacherSubjectList";
 import TeacherSubjectChapters from "./TeacherSubjectChapters";
+import TeacherVideoUpload from "./TeacherVideoUpload";
+import TeacherVideoList from "./TeacherVideoList";
 
 const TeacherDashboard = () => {
   const [open, setOpen] = useState(true);
@@ -104,6 +106,8 @@ const TeacherDashboard = () => {
               path="/Teacher/class/student/marks/:studentID/:subjectID"
               element={<StudentExamMarks situation="Subject" />}
             />
+            <Route path="/Teacher/upload" element={<TeacherVideoUpload />} />
+            <Route path="/Teacher/videos" element={<TeacherVideoList />} />
 
             <Route path="/logout" element={<Logout />} />
           </Routes>

@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   teachersList: [],
   teacherDetails: [],
-  subjectList: [], // New state for subjects
+  subjectList: [],
+  courseList: [],
+  videoList: [], // Added for video uploads
   loading: false,
   error: null,
   response: null,
@@ -29,7 +31,17 @@ const teacherSlice = createSlice({
       state.response = null;
     },
     setSubjectList: (state, action) => {
-      state.subjectList = action.payload; // Handle subject list updates
+      state.subjectList = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    setCourseList: (state, action) => {
+      state.courseList = action.payload;
+      state.loading = false;
+      state.error = null;
+    },
+    setVideoList: (state, action) => {
+      state.videoList = action.payload; // Handle video list updates
       state.loading = false;
       state.error = null;
     },
@@ -57,71 +69,9 @@ export const {
   getError,
   doneSuccess,
   postDone,
-  setSubjectList, // Export the new action
+  setSubjectList,
+  setCourseList,
+  setVideoList, // Exporting new action
 } = teacherSlice.actions;
 
 export const teacherReducer = teacherSlice.reducer;
-
-// import { createSlice } from "@reduxjs/toolkit";
-
-// const initialState = {
-//   teachersList: [],
-//   subjectList: [],
-//   teacherDetails: [],
-//   loading: false,
-//   error: null,
-//   response: null,
-// };
-
-// const teacherSlice = createSlice({
-//   name: "teacher",
-//   initialState,
-//   reducers: {
-//     getRequest: (state) => {
-//       state.loading = true;
-//     },
-//     doneSuccess: (state, action) => {
-//       state.teacherDetails = action.payload;
-//       state.loading = false;
-//       state.error = null;
-//       state.response = null;
-//     },
-//     getSuccess: (state, action) => {
-//       state.teachersList = action.payload;
-//       state.loading = false;
-//       state.error = null;
-//       state.response = null;
-//     },
-//     getFailed: (state, action) => {
-//       state.response = action.payload;
-//       state.loading = false;
-//       state.error = null;
-//     },
-//     getError: (state, action) => {
-//       state.loading = false;
-//       state.error = action.payload;
-//     },
-//     postDone: (state) => {
-//       state.loading = false;
-//       state.error = null;
-//       state.response = null;
-//     },
-//     setSubjectList: (state, action) => {
-//       state.subjectList = action.payload;
-//       state.loading = false;
-//       state.error = null;
-//     },
-//   },
-// });
-
-// export const {
-//   getRequest,
-//   getSuccess,
-//   getFailed,
-//   getError,
-//   doneSuccess,
-//   postDone,
-//   setSubjectList,
-// } = teacherSlice.actions;
-
-// export const teacherReducer = teacherSlice.reducer;
