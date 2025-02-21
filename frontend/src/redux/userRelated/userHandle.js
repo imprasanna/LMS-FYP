@@ -124,7 +124,7 @@ export const addStuff = (fields, address) => async (dispatch) => {
   }
 
   console.log(
-    `📡 Sending request to: ${process.env.REACT_APP_BASE_URL}/${address}`
+    `Sending request to: ${process.env.REACT_APP_BASE_URL}/${address}`
   );
 
   try {

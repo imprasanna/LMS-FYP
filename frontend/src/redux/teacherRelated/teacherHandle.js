@@ -51,18 +51,47 @@ export const getVideos = (teacherID) => async (dispatch) => {
 };
 
 // Upload videos
-export const addVideo = (fields) => async (dispatch) => {
+export const addVideo = (videoData) => async (dispatch, getState) => {
   dispatch(getRequest());
+
+  const { currentUser } = getState().user; // Assuming user state is in Redux under "user"
+
+  // Ensure user info is available and complete
+  if (
+    !currentUser ||
+    !currentUser.school ||
+    !currentUser.sclassName ||
+    !currentUser.subName ||
+    !currentUser.teacherId
+  ) {
+    dispatch(getFailed("User info is incomplete or missing required fields."));
+    return;
+  }
+
+  const school = currentUser.school._id;
+  const sclassName = currentUser.sclassName._id;
+  const subName = currentUser.subName._id;
+  const teacherName = currentUser.teacherId._id;
+
+  const requestBody = {
+    school,
+    sclassName,
+    subName,
+    teacherName,
+    ...videoData,
+  };
 
   try {
     const result = await axios.post(
-      `${process.env.REACT_APP_BASE_URL}/UploadVideo`,
-      fields,
+      `${process.env.REACT_APP_BASE_URL}/teacher/video`,
+      requestBody,
       { headers: { "Content-Type": "application/json" } }
     );
 
     if (result.data && result.data.success) {
+      // Video upload successful, reset state and refetch videos if needed
       dispatch(postDone());
+      dispatch(getVideos(currentUser.teacherId._id)); // Re-fetch video list if necessary
     } else {
       dispatch(getFailed(result.data.message || "Failed to upload video."));
     }

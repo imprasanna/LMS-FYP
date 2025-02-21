@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Button,
   TextField,
@@ -8,34 +8,27 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useDispatch, useSelector } from "react-redux";
-import { addStuff } from "../../redux/userRelated/userHandle";
+import { addVideo } from "../../redux/teacherRelated/teacherHandle";
 import Popup from "../../components/Popup";
 
 const TeacherVideoUpload = () => {
   const [videos, setVideos] = useState([{ chapter: "", videoUrl: "" }]);
   const dispatch = useDispatch();
   const userState = useSelector((state) => state.user);
-  const { userInfo, status, error } = userState;
+  const { userInfo } = userState;
 
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [loader, setLoader] = useState(false);
 
-  // Extract ObjectId values correctly
+  console.log("User Info State:", userInfo);
+
   const school = userInfo?.school?._id || "";
   const sclassName = userInfo?.sclassName?._id || "";
   const subName = userInfo?.subName?._id || "";
   const teacherName = userInfo?.teacherId?._id || "";
 
-  // Validate ObjectId format
-  const isValidObjectId = (id) =>
-    typeof id === "string" && /^[a-f\d]{24}$/i.test(id);
-
-  // Validate URL
-  const isValidUrl = (url) =>
-    /^(https?:\/\/)?(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)$/.test(
-      url
-    );
+  const isValidUrl = (url) => url.startsWith("http");
 
   const handleChange = (index, field) => (event) => {
     const newVideos = [...videos];
@@ -54,20 +47,28 @@ const TeacherVideoUpload = () => {
     event.preventDefault();
     setLoader(true);
 
-    // Validate required fields
-    if (
-      !isValidObjectId(school) ||
-      !isValidObjectId(sclassName) ||
-      !isValidObjectId(subName) ||
-      !isValidObjectId(teacherName)
-    ) {
-      setMessage("Invalid data! Please check your inputs and try again.");
+    // Ensure userInfo is available
+    if (!userInfo) {
+      setMessage("User information is not available.");
       setShowPopup(true);
       setLoader(false);
       return;
     }
 
-    // Validate video data
+    // Ensure all required user info fields are populated
+    const school = userInfo?.school?._id || "";
+    const sclassName = userInfo?.sclassName?._id || "";
+    const subName = userInfo?.subName?._id || "";
+    const teacherName = userInfo?.teacherId?._id || "";
+
+    if (!school || !sclassName || !subName || !teacherName) {
+      setMessage("One or more required fields are missing in your user info.");
+      setShowPopup(true);
+      setLoader(false);
+      return;
+    }
+
+    // Validate videos data
     for (let video of videos) {
       if (!video.chapter.trim()) {
         setMessage("Chapter name cannot be empty.");
@@ -76,15 +77,33 @@ const TeacherVideoUpload = () => {
         return;
       }
       if (!isValidUrl(video.videoUrl)) {
-        setMessage("Invalid video URL.");
+        setMessage("Invalid video URL. Must start with http or https.");
         setShowPopup(true);
         setLoader(false);
         return;
       }
     }
 
+    // Construct the request body
     const requestBody = { school, sclassName, subName, teacherName, videos };
-    dispatch(addStuff(requestBody, "teacher/video"));
+
+    console.log("Sending request body:", requestBody); // <-- Debugging line
+
+    // Dispatch the action to upload videos
+    dispatch(addVideo(requestBody))
+      .then(() => {
+        // Handle success (if needed)
+      })
+      .catch((error) => {
+        // Handle error (if needed)
+        setMessage(
+          error.message || "An error occurred during the video upload."
+        );
+        setShowPopup(true);
+      })
+      .finally(() => {
+        setLoader(false);
+      });
   };
 
   return (
