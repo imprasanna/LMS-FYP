@@ -6,6 +6,8 @@ const initialState = {
   subjectList: [],
   courseList: [],
   videoList: [], // Added for video uploads
+  videoTitle: "", // Added for managing video title
+  videoUrl: "", // Added for managing video URL
   loading: false,
   error: null,
   response: null,
@@ -45,6 +47,16 @@ const teacherSlice = createSlice({
       state.loading = false;
       state.error = null;
     },
+    setVideoTitle: (state, action) => {
+      state.videoTitle = action.payload; // Handle video title updates
+      state.loading = false;
+      state.error = null;
+    },
+    setVideoUrl: (state, action) => {
+      state.videoUrl = action.payload; // Handle video URL updates
+      state.loading = false;
+      state.error = null;
+    },
     getFailed: (state, action) => {
       state.response = action.payload;
       state.loading = false;
@@ -59,6 +71,12 @@ const teacherSlice = createSlice({
       state.error = null;
       state.response = null;
     },
+    setTeacherDetails: (state, action) => {
+      state.teacherDetails = action.payload;
+    },
+    setTeachersList: (state, action) => {
+      state.teachersList = action.payload;
+    },
   },
 });
 
@@ -71,7 +89,11 @@ export const {
   postDone,
   setSubjectList,
   setCourseList,
-  setVideoList, // Exporting new action
+  setVideoList,
+  setVideoTitle, // Exporting new action for video title
+  setVideoUrl, // Exporting new action for video URL
+  setTeacherDetails,
+  setTeachersList,
 } = teacherSlice.actions;
 
 export const teacherReducer = teacherSlice.reducer;

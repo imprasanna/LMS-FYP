@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Button,
   TextField,
@@ -7,26 +7,21 @@ import {
   Typography,
   CircularProgress,
 } from "@mui/material";
-import { useDispatch, useSelector } from "react-redux";
-import { addVideo } from "../../redux/teacherRelated/teacherHandle";
+import { useSelector } from "react-redux";
+import { useNavigate, useParams } from "react-router-dom";
 import Popup from "../../components/Popup";
 
 const TeacherVideoUpload = () => {
   const [videos, setVideos] = useState([{ chapter: "", videoUrl: "" }]);
-  const dispatch = useDispatch();
-  const userState = useSelector((state) => state.user);
-  const { userInfo } = userState;
-
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [loader, setLoader] = useState(false);
 
-  console.log("User Info State:", userInfo);
+  const navigate = useNavigate();
+  const params = useParams();
 
-  const school = userInfo?.school?._id || "";
-  const sclassName = userInfo?.sclassName?._id || "";
-  const subName = userInfo?.subName?._id || "";
-  const teacherName = userInfo?.teacherId?._id || "";
+  const userState = useSelector((state) => state.user);
+  const teacherName = userState?.currentUser?._id || "";
 
   const isValidUrl = (url) => url.startsWith("http");
 
@@ -39,44 +34,31 @@ const TeacherVideoUpload = () => {
   const handleAddVideo = () =>
     setVideos([...videos, { chapter: "", videoUrl: "" }]);
 
-  const handleRemoveVideo = (index) => {
-    setVideos((prev) => prev.filter((_, i) => i !== index));
+  const handleRemoveVideo = (index) => () => {
+    const newVideos = [...videos];
+    newVideos.splice(index, 1);
+    setVideos(newVideos);
   };
 
-  const submitHandler = (event) => {
+  const submitHandler = async (event) => {
     event.preventDefault();
     setLoader(true);
 
-    // Ensure userInfo is available
-    if (!userInfo) {
-      setMessage("User information is not available.");
+    if (!teacherName) {
+      setMessage("Missing required user data. Please log in again.");
       setShowPopup(true);
       setLoader(false);
       return;
     }
 
-    // Ensure all required user info fields are populated
-    const school = userInfo?.school?._id || "";
-    const sclassName = userInfo?.sclassName?._id || "";
-    const subName = userInfo?.subName?._id || "";
-    const teacherName = userInfo?.teacherId?._id || "";
-
-    if (!school || !sclassName || !subName || !teacherName) {
-      setMessage("One or more required fields are missing in your user info.");
-      setShowPopup(true);
-      setLoader(false);
-      return;
-    }
-
-    // Validate videos data
     for (let video of videos) {
       if (!video.chapter.trim()) {
-        setMessage("Chapter name cannot be empty.");
+        setMessage("Video title cannot be empty.");
         setShowPopup(true);
         setLoader(false);
         return;
       }
-      if (!isValidUrl(video.videoUrl)) {
+      if (!isValidUrl(video.videoUrl.trim())) {
         setMessage("Invalid video URL. Must start with http or https.");
         setShowPopup(true);
         setLoader(false);
@@ -84,26 +66,38 @@ const TeacherVideoUpload = () => {
       }
     }
 
-    // Construct the request body
-    const requestBody = { school, sclassName, subName, teacherName, videos };
+    console.log("request to backend: ", ...videos, teacherName);
 
-    console.log("Sending request body:", requestBody); // <-- Debugging line
+    try {
+      for (let video of videos) {
+        const response = await fetch("http://localhost:4000/teacher/video", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            teacherName,
+            chapter: video.chapter,
+            videoUrl: video.videoUrl,
+          }),
+        });
 
-    // Dispatch the action to upload videos
-    dispatch(addVideo(requestBody))
-      .then(() => {
-        // Handle success (if needed)
-      })
-      .catch((error) => {
-        // Handle error (if needed)
-        setMessage(
-          error.message || "An error occurred during the video upload."
-        );
-        setShowPopup(true);
-      })
-      .finally(() => {
-        setLoader(false);
-      });
+        const data = await response.json();
+        if (!response.ok) {
+          setMessage(data.message || "Upload failed. Try again.");
+          setShowPopup(true);
+          setLoader(false);
+          return;
+        }
+      }
+
+      navigate("/Teacher/videos");
+    } catch (error) {
+      setMessage("Network Error. Please try again.");
+      setShowPopup(true);
+    }
+
+    setLoader(false);
   };
 
   return (
@@ -117,7 +111,7 @@ const TeacherVideoUpload = () => {
             <Grid item xs={6}>
               <TextField
                 fullWidth
-                label="Chapter Name"
+                label="Video Title"
                 variant="outlined"
                 value={video.chapter}
                 onChange={handleChange(index, "chapter")}
@@ -139,7 +133,7 @@ const TeacherVideoUpload = () => {
                 <Button
                   variant="outlined"
                   color="error"
-                  onClick={() => handleRemoveVideo(index)}
+                  onClick={handleRemoveVideo(index)}
                 >
                   Remove
                 </Button>
@@ -153,21 +147,27 @@ const TeacherVideoUpload = () => {
           </Button>
         </Grid>
         <Grid item xs={12}>
-          <Button
-            variant="contained"
-            color="primary"
-            type="submit"
-            disabled={loader}
-          >
-            {loader ? <CircularProgress size={24} color="inherit" /> : "Upload"}
-          </Button>
+          <Box display="flex" justifyContent="flex-end">
+            <Button
+              variant="contained"
+              color="primary"
+              type="submit"
+              disabled={loader}
+            >
+              {loader ? (
+                <CircularProgress size={24} color="inherit" />
+              ) : (
+                "Upload"
+              )}
+            </Button>
+          </Box>
         </Grid>
+        <Popup
+          message={message}
+          setShowPopup={setShowPopup}
+          showPopup={showPopup}
+        />
       </Grid>
-      <Popup
-        message={message}
-        setShowPopup={setShowPopup}
-        showPopup={showPopup}
-      />
     </form>
   );
 };

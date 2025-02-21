@@ -16,11 +16,11 @@ export const getVideos = (teacherID) => async (dispatch) => {
   dispatch(getRequest());
 
   try {
-    const result = await axios.get(
-      `${process.env.REACT_APP_BASE_URL}/TeacherVideos/${teacherID}`
+    const result = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/teacher/video/all`,
+      { teacherID }
     );
 
-    // Ensure the response is valid
     if (
       result.status === 200 &&
       result.data &&
@@ -54,44 +54,31 @@ export const getVideos = (teacherID) => async (dispatch) => {
 export const addVideo = (videoData) => async (dispatch, getState) => {
   dispatch(getRequest());
 
-  const { currentUser } = getState().user; // Assuming user state is in Redux under "user"
+  const { currentUser } = getState().user;
 
-  // Ensure user info is available and complete
-  if (
-    !currentUser ||
-    !currentUser.school ||
-    !currentUser.sclassName ||
-    !currentUser.subName ||
-    !currentUser.teacherId
-  ) {
+  if (!currentUser.teacherId) {
     dispatch(getFailed("User info is incomplete or missing required fields."));
     return;
   }
 
-  const school = currentUser.school._id;
-  const sclassName = currentUser.sclassName._id;
-  const subName = currentUser.subName._id;
   const teacherName = currentUser.teacherId._id;
 
   const requestBody = {
-    school,
-    sclassName,
-    subName,
     teacherName,
     ...videoData,
   };
 
+  console.log("REQUEST BODY", requestBody);
+
   try {
     const result = await axios.post(
       `${process.env.REACT_APP_BASE_URL}/teacher/video`,
-      requestBody,
-      { headers: { "Content-Type": "application/json" } }
+      requestBody
     );
 
     if (result.data && result.data.success) {
-      // Video upload successful, reset state and refetch videos if needed
       dispatch(postDone());
-      dispatch(getVideos(currentUser.teacherId._id)); // Re-fetch video list if necessary
+      dispatch(getVideos(currentUser.teacherId._id));
     } else {
       dispatch(getFailed(result.data.message || "Failed to upload video."));
     }
@@ -102,24 +89,45 @@ export const addVideo = (videoData) => async (dispatch, getState) => {
   }
 };
 
-// Existing functions for courses and teachers remain unchanged
-
-export const getCourses = (teacherID) => async (dispatch) => {
+export const editVideo = (videoData) => async (dispatch) => {
   dispatch(getRequest());
 
   try {
-    const result = await axios.get(
-      `${process.env.REACT_APP_BASE_URL}/TeacherCourses/${teacherID}`
+    const result = await axios.put(
+      `${process.env.REACT_APP_BASE_URL}/teacher/video`,
+      videoData,
+      { headers: { "Content-Type": "application/json" } }
     );
 
-    if (result.data && result.data.courses) {
-      dispatch(setCourseList(result.data.courses));
+    if (result.data && result.data.success) {
+      dispatch(postDone());
     } else {
-      dispatch(getFailed("No course data received from server."));
+      dispatch(getFailed(result.data.message || "Failed to edit video."));
     }
   } catch (error) {
     dispatch(
-      getError(error.message || "An error occurred while fetching courses.")
+      getError(error.message || "An error occurred while editing video.")
+    );
+  }
+};
+
+export const deleteVideo = (videoId) => async (dispatch) => {
+  dispatch(getRequest());
+
+  try {
+    const result = await axios.post(
+      `${process.env.REACT_APP_BASE_URL}/teacher/video/delete`,
+      { videoId }
+    );
+
+    if (result.data && result.data.success) {
+      dispatch(postDone());
+    } else {
+      dispatch(getFailed(result.data.message || "Failed to delete video."));
+    }
+  } catch (error) {
+    dispatch(
+      getError(error.message || "An error occurred while deleting video.")
     );
   }
 };
