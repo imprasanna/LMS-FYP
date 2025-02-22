@@ -1,13 +1,15 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
-import { Paper } from "@mui/material";
+import { Paper, Button, Box } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import TableTemplate from "../../components/TableTemplate";
 
 const TeacherVideoList = () => {
   const [videos, setVideos] = useState([]);
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
 
   const { currentUser } = useSelector((state) => state.user);
   const teacherName = currentUser?._id;
@@ -46,7 +48,15 @@ const TeacherVideoList = () => {
   ];
 
   return (
-    <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
+    <Paper
+      sx={{
+        width: "100%",
+        overflow: "hidden",
+        padding: 2,
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       {loading ? (
         <div>Loading...</div>
       ) : error ? (
@@ -60,6 +70,15 @@ const TeacherVideoList = () => {
           buttonHaver={() => <div>No actions available</div>}
         />
       )}
+      <Box sx={{ display: "flex", justifyContent: "flex-end", marginTop: 2 }}>
+        <Button
+          variant="contained"
+          sx={{ backgroundColor: "#1f1f38", color: "white" }}
+          onClick={() => navigate("/Teacher/upload")}
+        >
+          Add Videos
+        </Button>
+      </Box>
     </Paper>
   );
 };

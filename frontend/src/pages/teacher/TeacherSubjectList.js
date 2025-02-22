@@ -1,11 +1,15 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getSubjectList } from "../../redux/subjectRelated/subjectHandle";
-import { Paper } from "@mui/material";
+import axios from "axios";
+import { Paper, Button } from "@mui/material";
 import TableTemplate from "../../components/TableTemplate";
 
 const ShowSubjects = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const [videoExists, setVideoExists] = useState(false);
 
   const { subjectsList, loading, error } = useSelector(
     (state) => state.subject
@@ -19,6 +23,17 @@ const ShowSubjects = () => {
     }
   }, [currentRole, currentUser?._id, dispatch]);
 
+  useEffect(() => {
+    axios
+      .get("http://localhost:4000/teacher/video/all")
+      .then((response) => {
+        if (Array.isArray(response.data) && response.data.length > 0) {
+          setVideoExists(true);
+        }
+      })
+      .catch(() => setVideoExists(false));
+  }, []);
+
   if (error) {
     console.error("Error fetching subjects:", error);
   }
@@ -29,13 +44,10 @@ const ShowSubjects = () => {
     { id: "sclassName", label: "Class", minWidth: 170 },
   ];
 
-  console.log("Subjects List from Redux:", subjectsList);
-
-  // Ensure subjectsList is always an array
   const formattedSubjects = Array.isArray(subjectsList)
     ? subjectsList
     : subjectsList && typeof subjectsList === "object"
-    ? [subjectsList] // Convert single object to an array
+    ? [subjectsList]
     : [];
 
   const subjectRows = formattedSubjects.map((subject) => ({
@@ -52,6 +64,19 @@ const ShowSubjects = () => {
     id: subject._id,
   }));
 
+  const SubjectButtonHaver = ({ row }) => {
+    return (
+      <Button
+        style={{ backgroundColor: "#1f1f38", color: "white" }}
+        onClick={() =>
+          navigate(videoExists ? "/Teacher/videos" : "/Teacher/upload")
+        }
+      >
+        View
+      </Button>
+    );
+  };
+
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
       {loading ? (
@@ -64,7 +89,7 @@ const ShowSubjects = () => {
         <TableTemplate
           columns={subjectColumns}
           rows={subjectRows}
-          buttonHaver={() => <div>No actions available</div>}
+          buttonHaver={SubjectButtonHaver}
         />
       )}
     </Paper>
