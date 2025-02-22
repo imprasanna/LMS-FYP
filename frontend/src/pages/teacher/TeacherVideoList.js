@@ -1,68 +1,66 @@
-import React, { useEffect } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { getVideos } from "../../redux/teacherRelated/teacherHandle";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-} from "@mui/material";
+import React, { useEffect, useState } from "react";
+import axios from "axios";
+import { useSelector } from "react-redux";
+import { Paper } from "@mui/material";
+import TableTemplate from "../../components/TableTemplate";
 
-const TeacherVideoList = ({ teacherID }) => {
-  const dispatch = useDispatch();
-  const videos = useSelector((state) => state.teacher.videoList);
-  const error = useSelector((state) => state.teacher.error);
+const TeacherVideoList = () => {
+  const [videos, setVideos] = useState([]);
+  const [error, setError] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  const { currentUser } = useSelector((state) => state.user);
+  const teacherName = currentUser?._id;
 
   useEffect(() => {
-    if (teacherID) {
-      dispatch(getVideos(teacherID));
+    if (teacherName) {
+      axios
+        .get("http://localhost:4000/teacher/video/all", {
+          params: { teacherName },
+        })
+        .then((response) => {
+          setVideos(Array.isArray(response.data) ? response.data : []);
+          setLoading(false);
+        })
+        .catch((err) => {
+          setError("Failed to fetch videos");
+          setVideos([]); // Ensure videos is an array even on error
+          setLoading(false);
+        });
     }
-  }, [dispatch, teacherID]);
+  }, [teacherName]);
+
+  const videoColumns = [
+    { id: "subName", label: "Subject Name", minWidth: 170 },
+    { id: "sclassName", label: "Class Name", minWidth: 170 },
+    {
+      id: "chapter",
+      label: "Video Title",
+      minWidth: 170,
+      format: (value, row) => (
+        <a href={row.videoUrl} target="_blank" rel="noopener noreferrer">
+          {value || "Untitled Video"}
+        </a>
+      ),
+    },
+  ];
 
   return (
-    <TableContainer component={Paper}>
-      <Table>
-        <TableHead>
-          <TableRow>
-            <TableCell>Subject Name</TableCell>
-            <TableCell>Class Name</TableCell>
-            <TableCell>Video Title</TableCell>
-          </TableRow>
-        </TableHead>
-        <TableBody>
-          {error ? (
-            <TableRow>
-              <TableCell colSpan={3} style={{ color: "red" }}>
-                {error}
-              </TableCell>
-            </TableRow>
-          ) : videos.length > 0 ? (
-            videos.map((video, index) => (
-              <TableRow key={index}>
-                <TableCell>{video.subName || "N/A"}</TableCell>
-                <TableCell>{video.sclassName || "N/A"}</TableCell>
-                <TableCell>
-                  <a
-                    href={video.videoUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {video.chapter || "Untitled Video"}
-                  </a>
-                </TableCell>
-              </TableRow>
-            ))
-          ) : (
-            <TableRow>
-              <TableCell colSpan={3}>No videos available.</TableCell>
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </TableContainer>
+    <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
+      {loading ? (
+        <div>Loading...</div>
+      ) : error ? (
+        <div style={{ color: "red" }}>{error}</div>
+      ) : videos.length === 0 ? (
+        <div>No videos available.</div>
+      ) : (
+        <TableTemplate
+          columns={videoColumns}
+          rows={videos}
+          buttonHaver={() => <div>No actions available</div>}
+        />
+      )}
+    </Paper>
   );
 };
 

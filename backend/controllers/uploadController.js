@@ -1,34 +1,29 @@
 const Upload = require("../models/uploadSchema");
 const mongoose = require("mongoose");
 
+// Upload a new video or add to existing teacher's videos
 const uploadVideo = async (req, res) => {
   const { teacherName, chapter, videoUrl } = req.body;
 
+  if (!teacherName || !chapter || !videoUrl) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
   try {
-    // Check if a document with the same school, sclassName, subName, and teacherName exists
-    let existingVideo = await Upload.findOne({
-      teacherName,
-    });
+    let existingVideo = await Upload.findOne({ teacherName });
 
     if (existingVideo) {
-      // Check if the chapter already exists
       const chapterExists = existingVideo.videos.some(
         (video) => video.chapter === chapter
       );
-
       if (chapterExists) {
         return res.status(400).json({ error: "This chapter already exists." });
       }
-
-      // If chapter does not exist, push new video details
       existingVideo.videos.push({ chapter, videoUrl });
       await existingVideo.save();
-      return res
-        .status(200)
-        .json({ message: "Video added successfully to the existing subject." });
+      return res.status(200).json({ message: "Video added successfully." });
     }
 
-    // If no existing document, create a new one
     const newVideo = new Upload({
       teacherName,
       videos: [{ chapter, videoUrl }],
@@ -42,102 +37,104 @@ const uploadVideo = async (req, res) => {
   }
 };
 
+// Fetch all videos for a teacher
 const getAllVideos = async (req, res) => {
-  const { subName, teacherName } = req.body;
+  const { teacherName } = req.query;
+
+  if (!teacherName) {
+    return res.status(400).json({ error: "Missing teacherName." });
+  }
 
   try {
-    const existingVideo = await Upload.findOne({
-      teacherName,
-    });
-    return res.status(200).json({
-      status: "success",
-      message: "Fetched successfully",
-      videos: existingVideo.videos,
-    });
+    const existingVideo = await Upload.findOne({ teacherName });
+    if (!existingVideo || existingVideo.videos.length === 0) {
+      return res.status(404).json({ error: "No videos found." });
+    }
+    return res.status(200).json({ videos: existingVideo.videos });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
+// Fetch a single video by chapter ID
 const getVideo = async (req, res) => {
-  const { teacherName, chapterId } = req.body;
+  const { teacherName, chapterId } = req.query;
+
+  if (!teacherName || !chapterId) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
 
   try {
-    const existingVideo = await Upload.findOne({
-      teacherName,
-    });
+    const existingVideo = await Upload.findOne({ teacherName });
     if (!existingVideo) {
-      return res.status(404).json({ error: "Video not found" });
+      return res.status(404).json({ error: "Teacher not found." });
     }
-    const video = existingVideo.videos.find((video) => {
-      return video._id.toString() === chapterId;
-    });
+    const video = existingVideo.videos.find(
+      (v) => v._id.toString() === chapterId
+    );
     if (!video) {
-      return res.status(404).json({ error: "Video not found" });
+      return res.status(404).json({ error: "Video not found." });
     }
-    return res.status(200).json({
-      status: "success",
-      message: "Fetched successfully",
-      video: video,
-    });
+    return res.status(200).json({ video });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
+// Edit video details
 const editVideo = async (req, res) => {
   const { teacherName, chapterId, chapter, videoUrl } = req.body;
 
+  if (!teacherName || !chapterId || !chapter || !videoUrl) {
+    return res.status(400).json({ error: "Missing required fields." });
+  }
+
   try {
-    const existingVideo = await Upload.findOne({
-      teacherName,
-    });
+    const existingVideo = await Upload.findOne({ teacherName });
     if (!existingVideo) {
-      return res.status(404).json({ error: "Video not found" });
+      return res.status(404).json({ error: "Teacher not found." });
     }
-    const video = existingVideo.videos.find((video) => {
-      return video._id.toString() === chapterId;
-    });
+    const video = existingVideo.videos.find(
+      (v) => v._id.toString() === chapterId
+    );
     if (!video) {
-      return res.status(404).json({ error: "Video not found" });
+      return res.status(404).json({ error: "Video not found." });
     }
     video.chapter = chapter;
     video.videoUrl = videoUrl;
     await existingVideo.save();
-    return res
-      .status(200)
-      .json({ status: "success", message: "Video updated successfully" });
+    return res.status(200).json({ message: "Video updated successfully." });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal Server Error" });
   }
 };
 
+// Delete a video
 const deleteVideo = async (req, res) => {
-  const { teacherName, chapterId } = req.body;
+  const { teacherName, chapterId } = req.query;
 
-  // Validate if chapterId is a valid ObjectId
-  if (!chapterId || !mongoose.Types.ObjectId.isValid(String(chapterId))) {
-    return res
-      .status(400)
-      .json({ error: "Invalid chapterId format. Must be a valid ObjectId." });
+  if (
+    !teacherName ||
+    !chapterId ||
+    !mongoose.Types.ObjectId.isValid(chapterId)
+  ) {
+    return res.status(400).json({ error: "Invalid or missing parameters." });
   }
+
   try {
     const result = await Upload.findOneAndUpdate(
       { teacherName },
-      { $pull: { videos: { _id: new mongoose.Types.ObjectId(chapterId) } } },
+      { $pull: { videos: { _id: chapterId } } },
       { new: true }
     );
 
     if (!result) {
-      return res.status(404).json({ error: "Video document not found" });
+      return res.status(404).json({ error: "Video document not found." });
     }
-
-    return res
-      .status(200)
-      .json({ status: "success", message: "Video deleted successfully" });
+    return res.status(200).json({ message: "Video deleted successfully." });
   } catch (err) {
     console.error(err);
     return res.status(500).json({ error: "Internal Server Error" });

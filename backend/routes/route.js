@@ -168,9 +168,9 @@ router.delete("/Subject/:id", deleteSubject);
 
 // Video Upload
 router.post("/teacher/video", uploadVideo);
-router.post("/teacher/video/all", getAllVideos);
-router.post("/teacher/video/single", getVideo);
+router.get("/teacher/video/all", getAllVideos);
+router.get("/teacher/video/single", getVideo);
 router.put("/teacher/video", editVideo);
-router.post("/teacher/video/delete", deleteVideo);
+router.delete("/teacher/video/delete", deleteVideo);
 
 module.exports = router;
