@@ -1,23 +1,23 @@
 const mongoose = require('mongoose');
 
 const uploadSchema = new mongoose.Schema({
-    school: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'admin',
-        required: true,
-    },
+    // school: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'admin',
+    //     required: true,
+    // },
 
-    sclassName: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'sclass',
-        required: true,
-    },
+    // sclassName: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'sclass',
+    //     required: true,
+    // },
  
-    subName: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'subject',
-        required: true
-    },
+    // subName: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'subject',
+    //     required: true
+    // },
     teacherName: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'teacher',

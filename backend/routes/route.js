@@ -1,5 +1,7 @@
 const router = require('express').Router();
 
+const upload = require("../middleware/upload.js")
+
 const {uploadVideo, getAllVideos, getVideo, editVideo, deleteVideo} = require("../controllers/uploadController.js")
 
 const { getAllStudentsMarksBySubject, editStudentMarks, deleteStudentMarks, downloadStudentResult} = require("../controllers/result-controller.js")
@@ -122,7 +124,7 @@ router.delete("/SubjectsClass/:id", deleteSubjectsByClass)
 
 
 // Video Upload
-router.post('/teacher/video', uploadVideo);
+router.post('/teacher/video',upload, uploadVideo);
 router.post('/teacher/video/all', getAllVideos);
 router.post('/teacher/video/single', getVideo);
 router.put('/teacher/video', editVideo);

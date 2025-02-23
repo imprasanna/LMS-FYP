@@ -1,12 +1,42 @@
 const Upload = require("../models/uploadSchema");
 const mongoose = require("mongoose");
+const catchAsync = require("../utils/catchAsync");
+const AppError = require("../utils/appError");
+const cloudinary = require("../utils/cloudinary");
+
+
+
+const uploadVideoToCloudinary = (fileBuffer) => {
+    return new Promise((resolve, reject) => {
+      const uploadStream = cloudinary.uploader.upload_stream(
+        {
+          resource_type: "video",
+          folder: "lms",
+        },
+        (error, result) => {
+          if (error) {
+            reject(new AppError(error.message, 500));
+          } else {
+            resolve(result.secure_url);
+          }
+        }
+      );
+  
+      uploadStream.end(fileBuffer);
+    });
+  };
 
 const uploadVideo = async (req, res) => {
-    const { school, sclassName, subName, teacherName, chapter, videoUrl } = req.body;
+    const {  teacherName, chapter } = req.body;
 
     try {
+        if (!req.file) {
+            console.log(req.file);
+          return next(new AppError("Please upload a video file!", 400));
+        }
+        const url = await uploadVideoToCloudinary(req.file.buffer);
         // Check if a document with the same school, sclassName, subName, and teacherName exists
-        let existingVideo = await Upload.findOne({ school, sclassName, subName, teacherName });
+        let existingVideo = await Upload.findOne({ teacherName });
 
         if (existingVideo) {
             // Check if the chapter already exists
@@ -17,18 +47,17 @@ const uploadVideo = async (req, res) => {
             }
 
             // If chapter does not exist, push new video details
-            existingVideo.videos.push({ chapter, videoUrl });
+            existingVideo.videos.push({ chapter, videoUrl: url });
             await existingVideo.save();
-            return res.status(200).json({ message: "Video added successfully to the existing subject." });
+            return res.status(200).json({ message: "Video added successfully to the existing subject.", 
+                data: {chapter, videoUrl: url}
+             });
         }
 
         // If no existing document, create a new one
         const newVideo = new Upload({
-            school,
-            sclassName,
-            subName,
             teacherName,
-            videos: [{ chapter, videoUrl }]
+            videos: [{ chapter, videoUrl: url }]
         });
 
         await newVideo.save();
@@ -42,10 +71,10 @@ const uploadVideo = async (req, res) => {
 
 
 const getAllVideos = async (req, res) => {
-    const { school, sclassName, subName, teacherName } = req.body;
+    const {  teacherName } = req.body;
 
     try {
-        const existingVideo = await Upload.findOne({ school, sclassName, subName, teacherName });
+        const existingVideo = await Upload.findOne({ teacherName });
         return res.status(200).json({status: "success", message: "Fetched successfully", videos: existingVideo.videos });
 }catch(err){
     console.error(err);
@@ -54,10 +83,10 @@ const getAllVideos = async (req, res) => {
 }
 
 const getVideo = async (req, res) => {
-    const { school, sclassName, subName, teacherName, chapterId } = req.body;
+    const {  teacherName, chapterId } = req.body;
 
     try {
-        const existingVideo = await Upload.findOne({school, sclassName, subName, teacherName});
+        const existingVideo = await Upload.findOne({ teacherName});
         if(!existingVideo){
             return res.status(404).json({error: "Video not found"});
         }
@@ -75,10 +104,10 @@ const getVideo = async (req, res) => {
 }
 
 const editVideo = async (req, res) => {
-    const { school, sclassName, subName, teacherName, chapterId, chapter, videoUrl } = req.body;
+    const {  teacherName, chapterId, chapter } = req.body;
 
     try {
-        const existingVideo = await Upload.findOne({school, sclassName, subName, teacherName});
+        const existingVideo = await Upload.findOne({ teacherName});
         if(!existingVideo){
             return res.status(404).json({error: "Video not found"});
         }
@@ -89,7 +118,7 @@ const editVideo = async (req, res) => {
             return res.status(404).json({error: "Video not found"});
         }
         video.chapter = chapter;
-        video.videoUrl = videoUrl;
+        // video.videoUrl = videoUrl;
         await existingVideo.save();
         return res.status(200).json({status: "success", message: "Video updated successfully"});
 }
@@ -101,22 +130,30 @@ catch(err){
 
 
 const deleteVideo = async (req, res) => {
-    const { school, sclassName, subName, teacherName, chapterId } = req.body;
+    const {  teacherName, chapterId } = req.body;
 
     // Validate if chapterId is a valid ObjectId
     if (!chapterId || !mongoose.Types.ObjectId.isValid(String(chapterId))) {
         return res.status(400).json({ error: "Invalid chapterId format. Must be a valid ObjectId." });
     }
     try {
-        const result = await Upload.findOneAndUpdate(
-            { school, sclassName, subName, teacherName },
-            { $pull: { videos: { _id: new mongoose.Types.ObjectId(chapterId) } } },
-            { new: true }
-        );
-
-        if (!result) {
-            return res.status(404).json({ error: "Video document not found" });
+        const teacherVideo = await Upload.findOne({ teacherName });
+        if (!teacherVideo) {
+            return res.status(404).json({ error: "Video not found by the teacher" });
         }
+        const video = teacherVideo.videos.find(video => video._id.toString() === chapterId);
+        if (!video) {
+            return res.status(404).json({ error: "Video not found" });
+        }
+        // video.remove();
+        teacherVideo.videos.pull({ _id: chapterId });
+        await teacherVideo.save();
+        // const result = await Upload.findOneAndUpdate(
+        //     { teacherName,  },
+        //     { $pull: { videos: { _id: new mongoose.Types.ObjectId(chapterId) } } },
+        //     { new: true }
+        // );
+
 
         return res.status(200).json({ status: "success", message: "Video deleted successfully" });
     } catch (err) {
