@@ -4,15 +4,19 @@ import { apiRequest } from "../../utils/apiFetch";
 import TableWithActions from "../../components/TableWithActions";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import useSnackBarController from "../../components/useSnackBar";
-import EditDialogBox from "../../components/EditDialogBox";  
+import EditDialogBox from "../../components/EditDialogBox";
 
 function Result() {
   const { showErrorSnackbar, showSuccessSnackbar } = useSnackBarController();
   const { currentUser } = useSelector((state) => state.user);
   const [result, setResult] = useState([]);
   const [error, setError] = useState(null);
-  const [classId, setClassId] = useState(currentUser.teachSclass?._id.toString());
-  const [subjectId, setSubjectId] = useState(currentUser.teachSubject?._id.toString());
+  const [classId, setClassId] = useState(
+    currentUser.teachSclass?._id.toString()
+  );
+  const [subjectId, setSubjectId] = useState(
+    currentUser.teachSubject?._id.toString()
+  );
   const [useEffectDependency, setUseEffectDependency] = useState(0);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
@@ -47,7 +51,7 @@ function Result() {
   const onEdit = (rollNum) => {
     const selectedRow = result.find((row) => row.rollNum === rollNum);
     onOpenEdit();
-    setSelectedEditRow(selectedRow);  // Pass the full row data
+    setSelectedEditRow(selectedRow); // Pass the full row data
   };
 
   const fetchAllResult = async (url, method, body) => {
@@ -58,7 +62,7 @@ function Result() {
           return {
             id: index + 1,
             ...row,
-            grade: row.marks === null ? null : row.grade
+            grade: row.marks === null ? null : row.grade,
           };
         });
 
@@ -84,7 +88,7 @@ function Result() {
     { id: "grade", label: "Grade", minWidth: 100, align: "center" },
   ];
 
-  const handleEdit = async(updatedRow) => {
+  const handleEdit = async (updatedRow) => {
     // console.log("Updating row:", updatedRow);
     const res = await apiRequest(
       "http://localhost:4000/teacher/result/update",
@@ -108,7 +112,6 @@ function Result() {
   };
 
   const handleDelete = async () => {
-
     const res = await apiRequest(
       "http://localhost:4000/teacher/result/delete",
       "POST",
@@ -144,7 +147,7 @@ function Result() {
         open={openEdit}
         onClose={onCloseEdit}
         onConfirm={handleEdit}
-        setSelectedEditRow={setSelectedEditRow}  // Pass setSelectedEditRow
+        setSelectedEditRow={setSelectedEditRow} // Pass setSelectedEditRow
         studentData={selectedEditRow}
       />
     </div>

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   Button,
   TextField,
@@ -8,31 +8,31 @@ import {
   CircularProgress,
 } from "@mui/material";
 import { useSelector } from "react-redux";
-import { useNavigate, useParams } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import Popup from "../../components/Popup";
 
 const TeacherVideoUpload = () => {
-  const [videos, setVideos] = useState([{ chapter: "", videoUrl: "" }]);
+  const [videos, setVideos] = useState([{ chapter: "", video: null }]);
   const [showPopup, setShowPopup] = useState(false);
   const [message, setMessage] = useState("");
   const [loader, setLoader] = useState(false);
 
   const navigate = useNavigate();
-  const params = useParams();
-
   const userState = useSelector((state) => state.user);
   const teacherName = userState?.currentUser?._id || "";
 
-  const isValidUrl = (url) => url.startsWith("http");
-
   const handleChange = (index, field) => (event) => {
     const newVideos = [...videos];
-    newVideos[index][field] = event.target.value;
+    if (field === "video") {
+      newVideos[index][field] = event.target.files[0];
+    } else {
+      newVideos[index][field] = event.target.value;
+    }
     setVideos(newVideos);
   };
 
   const handleAddVideo = () =>
-    setVideos([...videos, { chapter: "", videoUrl: "" }]);
+    setVideos([...videos, { chapter: "", video: null }]);
 
   const handleRemoveVideo = (index) => () => {
     const newVideos = [...videos];
@@ -58,28 +58,24 @@ const TeacherVideoUpload = () => {
         setLoader(false);
         return;
       }
-      if (!isValidUrl(video.videoUrl.trim())) {
-        setMessage("Invalid video URL. Must start with http or https.");
+      if (!video.video) {
+        setMessage("Please upload a video file.");
         setShowPopup(true);
         setLoader(false);
         return;
       }
     }
 
-    console.log("request to backend: ", ...videos, teacherName);
-
     try {
       for (let video of videos) {
+        const formData = new FormData();
+        formData.append("teacherName", teacherName);
+        formData.append("chapter", video.chapter);
+        formData.append("video", video.video);
+
         const response = await fetch("http://localhost:4000/teacher/video", {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            teacherName,
-            chapter: video.chapter,
-            videoUrl: video.videoUrl,
-          }),
+          body: formData,
         });
 
         const data = await response.json();
@@ -119,12 +115,10 @@ const TeacherVideoUpload = () => {
               />
             </Grid>
             <Grid item xs={6}>
-              <TextField
-                fullWidth
-                label="Video URL"
-                variant="outlined"
-                value={video.videoUrl}
-                onChange={handleChange(index, "videoUrl")}
+              <input
+                type="file"
+                accept="video/*"
+                onChange={handleChange(index, "video")}
                 required
               />
             </Grid>
