@@ -71,6 +71,8 @@ const ShowSubjects = () => {
     { id: "sclassName", label: "Class", minWidth: 170 },
   ];
 
+  console.log(subjectsList);
+
   const subjectRows = Array.isArray(subjectsList)
     ? subjectsList.map((subject) => ({
         subName: subject.subName || "N/A",

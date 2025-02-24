@@ -12,7 +12,7 @@ export const getSubjectList = (id, address) => async (dispatch) => {
   dispatch(getRequest());
   try {
     const endpoint = `${process.env.REACT_APP_BASE_URL}/${address}/${id}`;
-    console.log("Fetching subjects from:", endpoint);
+    // console.log("Fetching subjects from:", endpoint);
     const result = await axios.get(endpoint);
 
     // console.log("API Response:", result.data);
