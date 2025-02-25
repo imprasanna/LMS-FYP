@@ -9,10 +9,11 @@ import TableTemplate from "../../components/TableTemplate";
 const ShowSubjects = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const [videoExists, setVideoExists] = useState(false);
 
   const { subjectsList, loading, error } = useSelector((state) => state.sclass);
   const { currentUser, currentRole } = useSelector((state) => state.user);
+
+  const teacherId = currentUser._id;
 
   useEffect(() => {
     if (currentRole === "Teacher" && currentUser?._id) {
@@ -22,15 +23,16 @@ const ShowSubjects = () => {
   }, [currentRole, currentUser?._id, dispatch]);
 
   useEffect(() => {
+    // Fetch subjects
     axios
-      .get(`http://localhost:4000/TeacherSubject/${currentUser._id}`)
+      .get(`http://localhost:4000/TeacherSubject/${teacherId}`)
       .then((response) => {
-        if (Array.isArray(response.data) && response.data.length > 0) {
-          setVideoExists(true);
-        }
+        // nothing
       })
-      .catch(() => setVideoExists(false));
-  }, []);
+      .catch(() => {
+        // nothing
+      });
+  }, [currentUser._id]);
 
   if (error) {
     console.error("Error fetching subjects:", error);
@@ -66,9 +68,7 @@ const ShowSubjects = () => {
     return (
       <Button
         style={{ backgroundColor: "#1f1f38", color: "white" }}
-        onClick={() =>
-          navigate(videoExists ? "/Teacher/videos" : "/Teacher/upload")
-        }
+        onClick={() => navigate("/Teacher/videos")}
       >
         View
       </Button>
