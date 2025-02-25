@@ -7,6 +7,7 @@ import TableWithActions from "../../components/TableWithActions";
 import ConfirmationDialog from "../../components/ConfirmationDialog";
 import useSnackBarController from "../../components/useSnackBar";
 import EditDialogBox from "../../components/EditDialogBox";
+import AddReferenceBox from "../../components/ReferenceDialogBox";
 
 function Result() {
   const { showErrorSnackbar, showSuccessSnackbar } = useSnackBarController();
@@ -25,8 +26,10 @@ function Result() {
   const [useEffectDependency, setUseEffectDependency] = useState(0);
   const [openDelete, setOpenDelete] = useState(false);
   const [openEdit, setOpenEdit] = useState(false);
+  const [openReference, setOpenReference] = useState(false);
   const [selectedDeleteRow, setSelectedDeleteRow] = useState(null);
   const [selectedEditRow, setSelectedEditRow] = useState(null);
+  const [reference, setReference] = useState([]);
 
   const onOpenDelete = () => {
     setOpenDelete(true);
@@ -34,6 +37,14 @@ function Result() {
 
   const onOpenEdit = () => {
     setOpenEdit(true);
+  };
+
+  const onOpenReference = () => {
+    setOpenReference(true);
+  };
+
+  const onCloseReference = () => {
+    setOpenReference(false);
   };
 
   const onCloseEdit = () => {
@@ -72,6 +83,27 @@ function Result() {
         });
 
         setResult(resultData);
+      }
+    } catch (error) {
+      showErrorSnackbar(`Error: ${error.message}`);
+    }
+  };
+
+  const handleAddReference = async (updatedReference) => {
+    console.log("calling handleAddReference");
+    console.log("calling addReferenceReq");
+    try {
+      const response = await apiRequest(
+        "http://localhost:4000/addreferences",
+        "POST",
+        {
+          teacherId: teacherId,
+          resources: updatedReference,
+        }
+      );
+      if (response.success) {
+        // setSubject(response.subName);
+        showSuccessSnackbar("Reference added successfully");
       }
     } catch (error) {
       showErrorSnackbar(`Error: ${error.message}`);
@@ -202,6 +234,8 @@ function Result() {
       >
         <h1 sx={{ margin: 2 }}> Result</h1>
         <PurpleButton onClick={handleDownload}>Downlaod Result</PurpleButton>
+
+        <PurpleButton onClick={onOpenReference}>Add reference</PurpleButton>
       </Box>
       <TableWithActions
         columns={columns}
@@ -222,6 +256,14 @@ function Result() {
         onConfirm={handleEdit}
         setSelectedEditRow={setSelectedEditRow} // Pass setSelectedEditRow
         studentData={selectedEditRow}
+      />
+
+      <AddReferenceBox
+        open={openReference}
+        onClose={onCloseReference}
+        onConfirm={handleAddReference}
+        setReference={setReference}
+        reference={reference}
       />
     </div>
   );
