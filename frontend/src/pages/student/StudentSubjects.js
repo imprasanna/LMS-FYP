@@ -10,10 +10,10 @@ import {
   TableBody,
   TableHead,
   Typography,
+  Button,
 } from "@mui/material";
 import { getUserDetails } from "../../redux/userRelated/userHandle";
 import CustomBarChart from "../../components/CustomBarChart";
-
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import InsertChartOutlinedIcon from "@mui/icons-material/InsertChartOutlined";
 import TableChartIcon from "@mui/icons-material/TableChart";
@@ -26,8 +26,6 @@ const StudentSubjects = () => {
   const { userDetails, currentUser, loading, response, error } = useSelector(
     (state) => state.user
   );
-
-  //   console.log(subjectsList);
 
   useEffect(() => {
     dispatch(getUserDetails(currentUser._id, "Student"));
@@ -68,7 +66,9 @@ const StudentSubjects = () => {
           <TableHead>
             <StyledTableRow>
               <StyledTableCell>Subject</StyledTableCell>
+              <StyledTableCell>Videos</StyledTableCell>
               <StyledTableCell>Marks</StyledTableCell>
+              <StyledTableCell>References</StyledTableCell>
             </StyledTableRow>
           </TableHead>
           <TableBody>
@@ -79,7 +79,23 @@ const StudentSubjects = () => {
               return (
                 <StyledTableRow key={index}>
                   <StyledTableCell>{result.subName.subName}</StyledTableCell>
+                  <StyledTableCell>
+                    <Button
+                      variant="contained"
+                      style={{ backgroundColor: "#1f1f38", color: "white" }}
+                    >
+                      View Videos
+                    </Button>
+                  </StyledTableCell>
                   <StyledTableCell>{result.marksObtained}</StyledTableCell>
+                  <StyledTableCell>
+                    <Button
+                      variant="contained"
+                      style={{ backgroundColor: "#1f1f38", color: "white" }}
+                    >
+                      View References
+                    </Button>
+                  </StyledTableCell>
                 </StyledTableRow>
               );
             })}
