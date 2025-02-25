@@ -72,7 +72,8 @@ const TeacherVideoList = () => {
 
     try {
       await axios.post("http://localhost:4000/teacher/video/delete", {
-        videoId: deleteID,
+        teacherName,
+        chapterId: deleteID,
       });
 
       setVideos((prevVideos) =>
@@ -114,8 +115,9 @@ const TeacherVideoList = () => {
 
     try {
       await axios.put("http://localhost:4000/teacher/video", {
-        videoId: editingVideo._id,
-        title: editedTitle,
+        teacherName,
+        chapterId: editingVideo._id,
+        chapter: editedTitle,
       });
 
       setVideos((prevVideos) =>
