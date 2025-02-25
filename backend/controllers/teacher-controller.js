@@ -277,7 +277,7 @@ const addReferences = async (req, res) => {
   }
 };
 
-module.exports = addReferences;
+// module.exports = addReferences;
 
 module.exports = {
   teacherRegister,
@@ -292,15 +292,4 @@ module.exports = {
   getTeacherSubject,
   addReferences,
 };
-    teacherRegister,
-    teacherLogIn,
-    getTeachers,
-    getTeacherDetail,
-    updateTeacherSubject,
-    deleteTeacher,
-    deleteTeachers,
-    deleteTeachersByClass,
-    teacherAttendance,
-    getTeacherSubject,
-    addReferences
-};
+  
