@@ -8,6 +8,10 @@ import {
   IconButton,
   Button,
   Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  TextField,
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import TableTemplate from "../../components/TableTemplate";
@@ -25,6 +29,9 @@ const TeacherVideoList = () => {
   const [deleteID, setDeleteID] = useState(null);
   const [videoUrl, setVideoUrl] = useState("");
   const [openVideoDialog, setOpenVideoDialog] = useState(false);
+  const [editDialogOpen, setEditDialogOpen] = useState(false);
+  const [editedTitle, setEditedTitle] = useState("");
+  const [editingVideo, setEditingVideo] = useState(null);
 
   const navigate = useNavigate();
   const { currentUser } = useSelector((state) => state.user);
@@ -60,22 +67,24 @@ const TeacherVideoList = () => {
     setDeleteID(null);
   };
 
-  const deleteHandler = async (id) => {
+  const deleteHandler = async () => {
+    if (!deleteID) return;
+
     try {
+      await axios.post("http://localhost:4000/teacher/video/delete", {
+        videoId: deleteID,
+      });
+
+      setVideos((prevVideos) =>
+        prevVideos.filter((video) => video._id !== deleteID)
+      );
       setMessage("Video deleted successfully.");
-      setVideos(videos.filter((video) => video._id !== id));
     } catch (err) {
       setMessage("Failed to delete video. Please try again.");
     } finally {
       setShowPopup(true);
+      closeConfirmDialog();
     }
-  };
-
-  const confirmDelete = () => {
-    if (deleteID) {
-      deleteHandler(deleteID);
-    }
-    closeConfirmDialog();
   };
 
   const handleVideoClick = (url) => {
@@ -86,6 +95,45 @@ const TeacherVideoList = () => {
   const closeVideoDialog = () => {
     setOpenVideoDialog(false);
     setVideoUrl("");
+  };
+
+  const handleEditClick = (video) => {
+    setEditingVideo(video);
+    setEditedTitle(video.chapter || "Untitled Video");
+    setEditDialogOpen(true);
+  };
+
+  const closeEditDialog = () => {
+    setEditDialogOpen(false);
+    setEditingVideo(null);
+    setEditedTitle("");
+  };
+
+  const handleEditSave = async () => {
+    if (!editingVideo) return;
+
+    try {
+      await axios.put("http://localhost:4000/teacher/video", {
+        videoId: editingVideo._id,
+        title: editedTitle,
+      });
+
+      setVideos((prevVideos) =>
+        prevVideos.map((video) =>
+          video._id === editingVideo._id
+            ? { ...video, chapter: editedTitle }
+            : video
+        )
+      );
+
+      setMessage("Video updated successfully.");
+      setShowPopup(true);
+    } catch (error) {
+      setMessage("Failed to update video. Please try again.");
+      setShowPopup(true);
+    }
+
+    closeEditDialog();
   };
 
   const videoColumns = [{ id: "title", label: "Video Title", minWidth: 170 }];
@@ -106,16 +154,19 @@ const TeacherVideoList = () => {
     id: video._id,
   }));
 
-  const VideoButtonHaver = ({ row }) => (
-    <>
-      <IconButton onClick={() => navigate(`/Teacher/edit/${row.id}`)}>
-        <MdModeEdit color="primary" />
-      </IconButton>
-      <IconButton onClick={() => openConfirmDialog(row.id)}>
-        <DeleteIcon color="error" />
-      </IconButton>
-    </>
-  );
+  const VideoButtonHaver = ({ row }) => {
+    const video = videos.find((v) => v._id === row.id);
+    return (
+      <>
+        <IconButton onClick={() => handleEditClick(video)}>
+          <MdModeEdit color="primary" />
+        </IconButton>
+        <IconButton onClick={() => openConfirmDialog(row.id)}>
+          <DeleteIcon color="error" />
+        </IconButton>
+      </>
+    );
+  };
 
   return (
     <Paper sx={{ width: "100%", overflow: "hidden", padding: 2 }}>
@@ -151,7 +202,7 @@ const TeacherVideoList = () => {
       <ConfirmationDialog
         open={confirmDialogOpen}
         onClose={closeConfirmDialog}
-        onConfirm={confirmDelete}
+        onConfirm={deleteHandler}
         title="Confirm Delete"
         message="Are you sure you want to delete this video? This action cannot be undone."
       />
@@ -172,6 +223,34 @@ const TeacherVideoList = () => {
             allowFullScreen
           ></iframe>
         </Box>
+      </Dialog>
+
+      {/* Edit Video Dialog */}
+      <Dialog
+        open={editDialogOpen}
+        onClose={closeEditDialog}
+        fullWidth
+        maxWidth="sm"
+      >
+        <DialogTitle>Edit Video</DialogTitle>
+        <DialogContent>
+          <TextField
+            fullWidth
+            label="Video Title"
+            variant="outlined"
+            value={editedTitle}
+            onChange={(e) => setEditedTitle(e.target.value)}
+            margin="dense"
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={closeEditDialog} color="secondary">
+            Cancel
+          </Button>
+          <Button onClick={handleEditSave} color="primary" variant="contained">
+            Save Changes
+          </Button>
+        </DialogActions>
       </Dialog>
     </Paper>
   );
