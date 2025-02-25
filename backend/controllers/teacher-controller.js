@@ -239,54 +239,47 @@ const getTeacherSubject = async (req, res) => {
   }
 };
 
-
 const addReferences = async (req, res) => {
-    const { teacherId, resources } = req.body;
-    console.log(teacherId, resources);
+  const { teacherId, resources } = req.body;
+  console.log(teacherId, resources);
 
-    // Validate input
-    if (!teacherId || !Array.isArray(resources) || resources.length === 0) {
-        return res.status(400).json({ error: "Invalid input. Ensure teacherId and resources are provided." });
+  // Validate input
+  if (!teacherId || !Array.isArray(resources) || resources.length === 0) {
+    return res
+      .status(400)
+      .json({
+        error: "Invalid input. Ensure teacherId and resources are provided.",
+      });
+  }
+
+  try {
+    // Find the teacher by teacherId
+    const teacher = await Teacher.findById(teacherId);
+
+    if (!teacher) {
+      return res.status(404).json({ error: "Teacher not found" });
     }
 
-    try {
-        // Find the teacher by teacherId
-        const teacher = await Teacher.findById(teacherId);
+    // Replace existing resources with new ones
+    teacher.resources = resources;
+    await teacher.save();
 
-        if (!teacher) {
-            return res.status(404).json({ error: "Teacher not found" });
-        }
-
-        // Replace existing resources with new ones
-        teacher.resources = resources;
-        await teacher.save();
-
-        return res.status(200).json({ status: "success", message: "Resources updated successfully", teacher });
-    } catch (error) {
-        console.error(error);
-        return res.status(500).json({ error: "Internal Server Error" });
-    }
+    return res
+      .status(200)
+      .json({
+        status: "success",
+        message: "Resources updated successfully",
+        teacher,
+      });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Internal Server Error" });
+  }
 };
 
 module.exports = addReferences;
 
-
-
 module.exports = {
-<<<<<<< HEAD
-    teacherRegister,
-    teacherLogIn,
-    getTeachers,
-    getTeacherDetail,
-    updateTeacherSubject,
-    deleteTeacher,
-    deleteTeachers,
-    deleteTeachersByClass,
-    teacherAttendance,
-    getTeacherSubject,
-    addReferences
-};
-=======
   teacherRegister,
   teacherLogIn,
   getTeachers,
@@ -297,5 +290,5 @@ module.exports = {
   deleteTeachersByClass,
   teacherAttendance,
   getTeacherSubject,
+  addReferences,
 };
->>>>>>> 9294313d5c2f65811953c960af1e8837cb9be24e
