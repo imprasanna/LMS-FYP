@@ -25,7 +25,8 @@ const {
     clearAllStudentsAttendanceBySubject,
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
-    removeStudentAttendance } = require('../controllers/student_controller.js');
+    removeStudentAttendance, 
+    getAllVideosBySubject} = require('../controllers/student_controller.js');
 const { subjectCreate, classSubjects, deleteSubjectsByClass, getSubjectDetail, deleteSubject, freeSubjectList, allSubjects, deleteSubjects } = require('../controllers/subject-controller.js');
 const { teacherRegister, teacherLogIn, getTeachers, getTeacherDetail, deleteTeachers, deleteTeachersByClass, deleteTeacher, updateTeacherSubject, teacherAttendance, getTeacherSubject, addReferences } = require('../controllers/teacher-controller.js');
 
@@ -81,6 +82,8 @@ router.post('/TeacherAttendance/:id', teacherAttendance)
 router.get('/TeacherSubject/:id', getTeacherSubject)
 
 router.post("/addreferences", addReferences)
+
+router.post("/video/subject", getAllVideosBySubject)
 
 // Notice
 

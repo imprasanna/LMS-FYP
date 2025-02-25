@@ -1,6 +1,8 @@
 const bcrypt = require('bcrypt');
 const Student = require('../models/studentSchema.js');
 const Subject = require('../models/subjectSchema.js');
+const Teacher = require("../models/teacherSchema.js")
+const Upload = require("../models/uploadSchema.js")
 
 const studentRegister = async (req, res) => {
     try {
@@ -288,6 +290,45 @@ const removeStudentAttendance = async (req, res) => {
     }
 };
 
+const getAllVideosBySubject = async(req, res)=>{
+    try {
+        const subject = await Subject.findOne({subName: req.body.subName})
+        console.log(subject);
+        if(!subject){
+            res.send({message: "Subject not found"})
+        }
+const teacher = await Teacher.findOne({teachSubject: subject._id.toString()})
+console.log(teacher);
+const videos = await Upload.find({teacherName: teacher._id.toString()})
+
+        if(videos.length>0){
+            res.send({
+                message: "Videos found",
+                success: true,
+                data: videos
+            })
+        }else{
+            res.send({message: "No videos found"})
+        }
+    } catch (error) {
+        res.status(500).json(error)
+    }
+}
+
+// const recommendReference = async(req, res)=>{
+//     try{
+
+//     }catch(error){
+//         res.status(500).json({
+//             success: false,
+//             message: "Internal Server Error",
+//             error: error.message
+//         })
+//     }
+// }
+
+
+
 
 module.exports = {
     studentRegister,
@@ -305,4 +346,5 @@ module.exports = {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
+    getAllVideosBySubject
 };
