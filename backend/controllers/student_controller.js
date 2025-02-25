@@ -4,6 +4,10 @@ const Subject = require('../models/subjectSchema.js');
 const Teacher = require("../models/teacherSchema.js")
 const Upload = require("../models/uploadSchema.js")
 
+const { kMeansClustering,
+    findOptimalK,
+    getStudentMarksBySubject} = require("../controllers/helperController.js")
+
 const studentRegister = async (req, res) => {
     try {
         const salt = await bcrypt.genSalt(10);
@@ -292,7 +296,7 @@ const removeStudentAttendance = async (req, res) => {
 
 const getAllVideosBySubject = async(req, res)=>{
     try {
-        const subject = await Subject.findOne({subName: req.body.subName})
+        const subject = await Subject.findById(req.params.id);
         console.log(subject);
         if(!subject){
             res.send({message: "Subject not found"})
@@ -315,17 +319,43 @@ const videos = await Upload.find({teacherName: teacher._id.toString()})
     }
 }
 
-// const recommendReference = async(req, res)=>{
-//     try{
+const subjectByClass = async(req, res)=>{
+    try{
+        const subjects = await Subject.find({sclassName: req.params.id})
+        if(subjects.length>0){
+            res.send({
+                message: "Subjects found",
+                success: true,
+                data: subjects
+            })
+        }else{
+            res.send({message: "No subjects found"})
+        }
 
-//     }catch(error){
-//         res.status(500).json({
-//             success: false,
-//             message: "Internal Server Error",
-//             error: error.message
-//         })
-//     }
-// }
+    }catch(err){
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: err.message
+        })
+    }
+}
+
+const recommendReference = async(req, res)=>{
+    try{
+        const subject = await Subject.findOne({subName: req.body.subName})
+        if(!subject){
+            res.send({message: "Subject not found"})
+        }
+
+    }catch(error){
+        res.status(500).json({
+            success: false,
+            message: "Internal Server Error",
+            error: error.message
+        })
+    }
+}
 
 
 
@@ -346,5 +376,6 @@ module.exports = {
     clearAllStudentsAttendance,
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
-    getAllVideosBySubject
+    getAllVideosBySubject,
+    subjectByClass
 };
