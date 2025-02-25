@@ -273,7 +273,6 @@ module.exports = addReferences;
 
 
 module.exports = {
-<<<<<<< HEAD
     teacherRegister,
     teacherLogIn,
     getTeachers,
@@ -286,16 +285,3 @@ module.exports = {
     getTeacherSubject,
     addReferences
 };
-=======
-  teacherRegister,
-  teacherLogIn,
-  getTeachers,
-  getTeacherDetail,
-  updateTeacherSubject,
-  deleteTeacher,
-  deleteTeachers,
-  deleteTeachersByClass,
-  teacherAttendance,
-  getTeacherSubject,
-};
->>>>>>> 9294313d5c2f65811953c960af1e8837cb9be24e
