@@ -32,6 +32,10 @@ const teacherSchema = new mongoose.Schema({
         ref: 'sclass',
         required: true,
     },
+    resources: {
+        type: [String],
+        default: []
+    },
     attendance: [{
         date: {
             type: Date,
@@ -44,6 +48,8 @@ const teacherSchema = new mongoose.Schema({
             type: String,
         }
     }]
-}, { timestamps: true });
+},
+
+{ timestamps: true });
 
 module.exports = mongoose.model("teacher", teacherSchema)

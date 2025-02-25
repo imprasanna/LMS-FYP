@@ -161,4 +161,5 @@ const deleteSubjectsByClass = async (req, res) => {
 };
 
 
+
 module.exports = { subjectCreate, freeSubjectList, classSubjects, getSubjectDetail, deleteSubjectsByClass, deleteSubjects, deleteSubject, allSubjects };
