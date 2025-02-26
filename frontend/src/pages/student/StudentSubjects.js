@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 import { getSubjectList } from "../../redux/sclassRelated/sclassHandle";
 import {
   BottomNavigation,
@@ -11,8 +12,13 @@ import {
   TableHead,
   Typography,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
 } from "@mui/material";
 import { getUserDetails } from "../../redux/userRelated/userHandle";
+import axios from "axios";
 import CustomBarChart from "../../components/CustomBarChart";
 import InsertChartIcon from "@mui/icons-material/InsertChart";
 import InsertChartOutlinedIcon from "@mui/icons-material/InsertChartOutlined";
@@ -22,20 +28,18 @@ import { StyledTableCell, StyledTableRow } from "../../components/styles";
 
 const StudentSubjects = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { subjectsList, sclassDetails } = useSelector((state) => state.sclass);
-  const { userDetails, currentUser, loading, response, error } = useSelector(
+  const { userDetails, currentUser, loading } = useSelector(
     (state) => state.user
   );
+
+  const [openPopup, setOpenPopup] = useState(false);
+  const [referenceText, setReferenceText] = useState("");
 
   useEffect(() => {
     dispatch(getUserDetails(currentUser._id, "Student"));
   }, [dispatch, currentUser._id]);
-
-  if (response) {
-    console.log(response);
-  } else if (error) {
-    console.log(error);
-  }
 
   const [subjectMarks, setSubjectMarks] = useState([]);
   const [selectedSection, setSelectedSection] = useState("table");
@@ -47,42 +51,60 @@ const StudentSubjects = () => {
   }, [userDetails]);
 
   useEffect(() => {
-    if (subjectMarks) {
+    if (subjectMarks.length > 0) {
       dispatch(getSubjectList(currentUser.sclassName._id, "ClassSubjects"));
     }
   }, [subjectMarks, dispatch, currentUser.sclassName._id]);
 
-  const handleSectionChange = (event, newSection) => {
-    setSelectedSection(newSection);
+  const handleViewVideos = (subjectId) => {
+    navigate(`/Student/videos/${subjectId}`);
   };
 
-  const renderTableSection = () => {
-    return (
-      <>
-        <Typography variant="h4" align="center" gutterBottom>
-          Subject Marks
-        </Typography>
-        <Table>
-          <TableHead>
-            <StyledTableRow>
-              <StyledTableCell>Subject</StyledTableCell>
-              <StyledTableCell>Videos</StyledTableCell>
-              <StyledTableCell>Marks</StyledTableCell>
-              <StyledTableCell>References</StyledTableCell>
-            </StyledTableRow>
-          </TableHead>
-          <TableBody>
-            {subjectMarks.map((result, index) => {
-              if (!result.subName || !result.marksObtained) {
-                return null;
-              }
-              return (
+  const handleViewReferences = async (subjectId) => {
+    const requestData = {
+      classId: currentUser.sclassName._id,
+      subjectId: subjectId,
+      rollNum: currentUser.rollNum,
+    };
+
+    try {
+      const response = await axios.post(
+        "http://localhost:4000/recommendStudent",
+        requestData
+      );
+      const reference =
+        response.data.data.personalizedReference || "No references recommended";
+      setReferenceText(reference);
+      setOpenPopup(true);
+    } catch (error) {
+      console.error("Error fetching references:", error);
+    }
+  };
+
+  return (
+    <>
+      {loading ? (
+        <div>Loading...</div>
+      ) : (
+        <div>
+          <Table>
+            <TableHead>
+              <StyledTableRow>
+                <StyledTableCell>Subject</StyledTableCell>
+                <StyledTableCell>Videos</StyledTableCell>
+                <StyledTableCell>Marks</StyledTableCell>
+                <StyledTableCell>References</StyledTableCell>
+              </StyledTableRow>
+            </TableHead>
+            <TableBody>
+              {subjectMarks.map((result, index) => (
                 <StyledTableRow key={index}>
                   <StyledTableCell>{result.subName.subName}</StyledTableCell>
                   <StyledTableCell>
                     <Button
                       variant="contained"
                       style={{ backgroundColor: "#1f1f38", color: "white" }}
+                      onClick={() => handleViewVideos(result.subName._id)}
                     >
                       View Videos
                     </Button>
@@ -92,97 +114,36 @@ const StudentSubjects = () => {
                     <Button
                       variant="contained"
                       style={{ backgroundColor: "#1f1f38", color: "white" }}
+                      onClick={() => handleViewReferences(result.subName._id)}
                     >
                       View References
                     </Button>
                   </StyledTableCell>
                 </StyledTableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </>
-    );
-  };
+              ))}
+            </TableBody>
+          </Table>
 
-  const renderChartSection = () => {
-    return <CustomBarChart chartData={subjectMarks} dataKey="marksObtained" />;
-  };
-
-  const renderClassDetailsSection = () => {
-    return (
-      <Container>
-        <Typography variant="h4" align="center" gutterBottom>
-          Class Details
-        </Typography>
-        <Typography variant="h5" gutterBottom>
-          You are currently in Class {sclassDetails && sclassDetails.sclassName}
-        </Typography>
-        <Typography variant="h6" gutterBottom>
-          And these are the subjects:
-        </Typography>
-        {subjectsList &&
-          subjectsList.map((subject, index) => (
-            <div key={index}>
-              <Typography variant="subtitle1">
-                {subject.subName} ({subject.subCode})
-              </Typography>
-            </div>
-          ))}
-      </Container>
-    );
-  };
-
-  return (
-    <>
-      {loading ? (
-        <div>Loading...</div>
-      ) : (
-        <div>
-          {subjectMarks &&
-          Array.isArray(subjectMarks) &&
-          subjectMarks.length > 0 ? (
-            <>
-              {selectedSection === "table" && renderTableSection()}
-              {selectedSection === "chart" && renderChartSection()}
-
-              <Paper
-                sx={{ position: "fixed", bottom: 0, left: 0, right: 0 }}
-                elevation={3}
+          <Dialog open={openPopup} onClose={() => setOpenPopup(false)}>
+            <DialogTitle>Recommended References</DialogTitle>
+            <DialogContent>
+              <Typography
+                style={{
+                  color:
+                    referenceText === "No references recommended"
+                      ? "#FF5733"
+                      : "black",
+                }}
               >
-                <BottomNavigation
-                  value={selectedSection}
-                  onChange={handleSectionChange}
-                  showLabels
-                >
-                  <BottomNavigationAction
-                    label="Table"
-                    value="table"
-                    icon={
-                      selectedSection === "table" ? (
-                        <TableChartIcon />
-                      ) : (
-                        <TableChartOutlinedIcon />
-                      )
-                    }
-                  />
-                  <BottomNavigationAction
-                    label="Chart"
-                    value="chart"
-                    icon={
-                      selectedSection === "chart" ? (
-                        <InsertChartIcon />
-                      ) : (
-                        <InsertChartOutlinedIcon />
-                      )
-                    }
-                  />
-                </BottomNavigation>
-              </Paper>
-            </>
-          ) : (
-            <>{renderClassDetailsSection()}</>
-          )}
+                {referenceText}
+              </Typography>
+            </DialogContent>
+            <DialogActions>
+              <Button onClick={() => setOpenPopup(false)} color="primary">
+                Hide
+              </Button>
+            </DialogActions>
+          </Dialog>
         </div>
       )}
     </>

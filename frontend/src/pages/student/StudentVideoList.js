@@ -1,31 +1,29 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useSelector } from "react-redux";
+import { useLocation } from "react-router-dom";
 import { Paper, Box, CircularProgress, Button, Dialog } from "@mui/material";
 import TableTemplate from "../../components/TableTemplate";
 
-const TeacherVideoList = () => {
+const StudentVideoList = () => {
   const [videos, setVideos] = useState([]);
   const [loader, setLoader] = useState(false);
   const [videoUrl, setVideoUrl] = useState("");
   const [openVideoDialog, setOpenVideoDialog] = useState(false);
 
-  const { currentUser } = useSelector((state) => state.user);
-
-  const user = currentUser._id;
-
-  console.log("user: ", currentUser);
+  const location = useLocation();
+  const subjectId = location.pathname.split("/").pop(); // Extract subject ID from URL
 
   useEffect(() => {
-    if (user) {
+    if (subjectId) {
       const fetchData = async () => {
         setLoader(true);
         try {
-          const response = await axios.post(
-            "http://localhost:4000/video/subject",
-            { user }
+          const response = await axios.get(
+            `http://localhost:4000/video/subject/${subjectId}`
           );
-          setVideos(response.data.videos || []);
+          console.log(response.data.data[0].videos);
+          setVideos(response.data.data[0].videos || []);
         } catch (error) {
           console.error("Failed to fetch videos.", error);
         } finally {
@@ -34,7 +32,7 @@ const TeacherVideoList = () => {
       };
       fetchData();
     }
-  }, [user]);
+  }, [subjectId]);
 
   const handleVideoClick = (url) => {
     setVideoUrl(url);
@@ -103,4 +101,4 @@ const TeacherVideoList = () => {
   );
 };
 
-export default TeacherVideoList;
+export default StudentVideoList;
