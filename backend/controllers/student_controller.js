@@ -343,10 +343,37 @@ const subjectByClass = async(req, res)=>{
 
 const recommendReference = async(req, res)=>{
     try{
-        const subject = await Subject.findOne({subName: req.body.subName})
-        if(!subject){
+        const {classId, subjectId, rollNum} = req.body;
+const subject = await Subject.findOne({_id: subjectId, sclassName: classId})
+            if(!subject){
             res.send({message: "Subject not found"})
         }
+        const studentMarks = await getStudentMarksBySubject(classId, subjectId)
+        const k = findOptimalK(studentMarks)
+        const result = kMeansClustering(studentMarks, 3)
+        const actualStudentResult = result.filter(student => student.rollNum === rollNum);
+
+        const teacher = await Teacher.findOne({teachSubject: subjectId})
+const teacherResource = teacher.resources
+let personalizedReference = ""
+
+if(actualStudentResult.grade == "A") {
+    personalizedReference = teacherResource[0]
+}
+else if(actualStudentResult.grade == "B") {
+    personalizedReference = teacherResource[1]
+}else{
+    personalizedReference = teacherResource[2]
+}
+
+res.status(200).json({
+    success: true,
+    message: "Recommended Reference",
+    data: {
+        personalizedReference,
+        generalReference: teacherResource
+    }
+})
 
     }catch(error){
         res.status(500).json({
@@ -377,5 +404,6 @@ module.exports = {
     removeStudentAttendanceBySubject,
     removeStudentAttendance,
     getAllVideosBySubject,
-    subjectByClass
+    subjectByClass,
+    recommendReference
 };

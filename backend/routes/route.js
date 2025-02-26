@@ -59,6 +59,7 @@ const {
   removeStudentAttendance,
   getAllVideosBySubject,
   subjectByClass,
+  recommendReference,
 } = require("../controllers/student_controller.js");
 const {
   subjectCreate,
@@ -122,6 +123,7 @@ router.put("/RemoveStudentAtten/:id", removeStudentAttendance);
 
 router.get("/getAllSubjects/:id", subjectByClass);
 router.get("/video/subject/:id", getAllVideosBySubject);
+router.post("/recommendStudent", recommendReference);
 
 // Teacher
 
